@@ -34,7 +34,8 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
     bounds = np.concatenate((np.array([(0, L) for i in range (N_satellites)]), 
                             np.array([(0,l) for i in range (N_satellites)])))
     
-    return differential_evolution(obj, bounds).x
+    result = differential_evolution(obj, bounds).x
+    return result[:N_satellites], result[N_satellites:]
 
 
 if (__name__ == '__main__') :

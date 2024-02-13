@@ -3,13 +3,9 @@ import numpy as np
 
 from euclidean_satellites_repartition import euclidean_satellites_repartition
 
-l = 12742 # [km] largeur  approximative de la terre
-L = 40030 # [km] longueur approximative de la terre
-
-# 1 Génération de points aléatoires
-X = np.random.rand(20)*L
-Y = np.random.rand(20)*l
-cost = np.random.randint(1, 50, 20)
+X = np.array([100, 150, 300, 300, 700, 750, 800, 800, 800, 950, 1000, 1200, 1400, 1413, 1500])*10
+Y = np.array([30, 450, 200, 300, 50, 50, 400, 250, 300, 10, 420, 350, 270, 200, 430])*10
+cost = np.array([1, 4, 2, 10, 5, 3, 8, 1, 9, 2, 5, 8, 3, 1, 6])
 N_satellites = 5
 
 Xs, Ys = euclidean_satellites_repartition(N_satellites, np.vstack((X,Y)).T, cost)
