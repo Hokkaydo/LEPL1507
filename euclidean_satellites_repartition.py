@@ -3,7 +3,7 @@ from math import *
 from scipy.optimize import *
 import matplotlib.pyplot as plt
 
-def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, puissance = 100000, I_acceptable = 1) :
+def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, puissance = 260*10**9, I_acceptable = 233*10**3) :
     """
     N_satellites (int)                               : nombre de satellites disponibles pour couvrir la terre
     cities_coordinates (tableau de tuples d'entiers) : coordonnées des villes qu'on cherche à couvrir
@@ -13,9 +13,14 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
 
     Retourne :
     satellites_coordinates (tableau de tuples d'entiers) : coodonnées des N_satellites permettant d'offrir une couverture optimale
+    
+    233kbits par seconde par utilisateur
+    260Gbits par seconde par satellite
     """
-
-    l = 500; L = 1500
+    weight_sum = sum(cities_weights)
+    cities_weights = [w/weight_sum for w in cities_weights]
+    l = 12742 # [km] largeur  approximative de la terre
+    L = 40030 # [km] longueur approximative de la terre
     def obj(x) :
         cost = 0
         for j in range (len(cities_coordinates)) :
