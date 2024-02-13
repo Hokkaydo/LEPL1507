@@ -1,8 +1,9 @@
 import numpy as np
-import cvxpy as cp
-from pyomo.environ import *
+from math import *
+from scipy.optimize import *
+import matplotlib.pyplot as plt
 
-def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, puissance = 3.8, I_acceptable = 1) :
+def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, puissance = 100000, I_acceptable = 1) :
     """
     N_satellites (int)                               : nombre de satellites disponibles pour couvrir la terre
     cities_coordinates (tableau de tuples d'entiers) : coordonnées des villes qu'on cherche à couvrir
@@ -14,50 +15,32 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
     satellites_coordinates (tableau de tuples d'entiers) : coodonnées des N_satellites permettant d'offrir une couverture optimale
     """
 
-    def obj (model) :
+    l = 500; L = 1500
+    def obj(x) :
         cost = 0
         for j in range (len(cities_coordinates)) :
             local = 0
             for i in range (N_satellites) :
-                local += 1/((np.linalg.norm(np.array([model.x[i], model.y[i]]) - cities_coordinates[j]))**2)
+                local += 1/((np.linalg.norm(np.array([x[i],x[i+N_satellites]]) - cities_coordinates[j]))**2)
             local *= puissance/(4*np.pi)
             cost += np.minimum(local, I_acceptable*cities_weights[j])
-        return cost
-
-    L = 1500; l = 500
-    model = ConcreteModel()
-    model.x = Var(np.arange(N_satellites), bounds=(0,L))
-    model.y = Var(np.arange(N_satellites), bounds=(0,l))
-    model.obj = Objective(rule = obj, sense = maximize)
-
-    solver = SolverFactory('glpk')
-    solver.solve(model)
-    model.pprint()
-
-
-
-
-
-
-
-
-
-"""
-    X = cp.Variable((N_satellites, 2))
-    cost = 0
-    for j in range (len(cities_coordinates)) :
-        local = 0
-        for i in range (N_satellites) :
-            local += 1/((cp.norm(X[i,:] - cities_coordinates[j]))**2)
-        local *= puissance/(4*np.pi)
-        cost += cp.minimum(local, I_acceptable*cities_weights[j])
-    objective = cp.Maximize(cost)
-    prob = cp.Problem(objective)
-    print(prob.solve())"""
+        return -cost
+    
+    bounds = np.concatenate((np.array([(0, L) for i in range (N_satellites)]), 
+                            np.array([(0,l) for i in range (N_satellites)])))
+    
+    return differential_evolution(obj, bounds).x
 
 
 if (__name__ == '__main__') :
     N_satellites = 2
     cities_coordinates = np.array([[1, 1], [100, 300], [1000, 200], [700, 50]])
     cities_weights = [1, 1, 1, 1]
-    euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights)
+    result = euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights)
+
+    plt.figure()
+    for city in cities_coordinates :
+        plt.plot(city[0], city[1], 'ob')
+    for i in range(N_satellites) :
+        plt.plot(result[i], result[N_satellites+i], 'or')
+    plt.show()
