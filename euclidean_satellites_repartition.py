@@ -24,9 +24,11 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
     c = 3 * 10**8 # [m/s] vitesse de la lumière dans le vide
     frequence = 10**9 # [Hz] fréquence des satellites !! rechercher une valeur de reference !!
 
-    def interf_destr(satellite_coord, city_coord, dist) :
-        phase_difference = dist*2*np.pi/(c/frequence)
-        if phase_difference%np.pi == np.pi/2: #vérification multiple impair de pi
+    def interf_destr(satellite1_coord, satellite2_coord, city_coord):
+        dist1 = np.linalg.norm(satellite1_coord-city_coord)
+        dist2 = np.linalg.norm(satellite2_coord-city_coord)
+        phase_difference = (dist1 - dist2)*2*np.pi/(c/frequence)
+        if phase_difference % np.pi == np.pi/2:  # vérification multiple impair de pi
             return True
         return False
     
@@ -34,12 +36,15 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
         cost = 0
         for j in range (len(cities_coordinates)) :
             local = 0
-            for i in range (N_satellites) :
-                dist = np.linalg.norm(np.array([x[i],x[i+N_satellites]]) - cities_coordinates[j])
-                local += 1/(dist**2)
-            local *= puissance/(4*np.pi)
-            if not interf_destr(x, cities_coordinates[j],dist):
-                cost += np.minimum(local, I_acceptable*cities_weights[j])
+            for i in range(N_satellites):
+                for k in range(i+1, N_satellites): 
+                    if interf_destr(np.array([x[i], x[i + N_satellites]]), np.array([x[k], x[k + N_satellites]]),
+                                    cities_coordinates[j]):
+                        break
+                dist = np.linalg.norm(np.array([x[i], x[i + N_satellites]]) - cities_coordinates[j])
+                local += 1 / (dist**2)
+            local *= puissance / (4 * np.pi)
+            cost += np.minimum(local, I_acceptable * cities_weights[j])
         return -cost
     
     bounds = np.concatenate((np.array([(0, L) for i in range (N_satellites)]), 
