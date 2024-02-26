@@ -27,8 +27,10 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
     def interf_destr(satellite1_coord, satellite2_coord, city_coord):
         dist1 = np.linalg.norm(satellite1_coord-city_coord)
         dist2 = np.linalg.norm(satellite2_coord-city_coord)
-        phase_difference = (dist1 - dist2)*2*np.pi/(c/frequence)
-        if phase_difference % np.pi == np.pi/2:  # vérification multiple impair de pi
+        m1 = abs(dist1 - dist2)/(c/frequence)-1/2
+        m2 = m1 % 1
+        tolerance = 0.1 #correspond à 0.1 radian autour du point exact d'interférence destructive !! determiner une valeur de reference !! 
+        if abs(m1 - m2)  <= tolerance:
             return True
         return False
     
