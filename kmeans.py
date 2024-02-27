@@ -29,6 +29,26 @@ def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_we
     #res = np.append(centroids[:, 0], centroids[:, 1])
     return centroids[:, 0], centroids[:, 1]
 
+def euclidean_satellites_repartition2(N_satellites, cities_coordinates, cities_weights, puissance = 100000, I_acceptable = 1):
+    """
+    N_satellites (int)                               : nombre de satellites disponibles pour couvrir la terre
+    cities_coordinates (tableau de tuples d'entiers) : coordonnées des villes qu'on cherche à couvrir
+    cities_weights (tableau d'entiers)               : poids d'une ville (importance relative par rapport aux autres)
+    puissance (float)                                : puissance [W] d'un satellite (identique pour tous)
+    I_acceptable (float)                             : intensité [W/m²] considérée comme acceptable pour 10 000 personnes
+
+    Retourne :
+    satellites_coordinates (tableau de tuples d'entiers) : coodonnées des N_satellites permettant d'offrir une couverture optimale
+    """
+    weight_sum = sum(cities_weights)
+    cities_weights = np.array([w/weight_sum for w  in cities_weights])
+    
+    #centroids = KMeans3(cities_coordinates, cities_weights, n=N_satellites)
+    
+    centroids = np.array(centroids)
+    #res = np.append(centroids[:, 0], centroids[:, 1])
+    return centroids[:, 0], centroids[:, 1]
+
 def test_compare(N_satellites, cities_coordinates, cities_weights, puissance = 100000, I_acceptable = 1, return_after=99999):
     """
     N_satellites (int)                               : nombre de satellites disponibles pour couvrir la terre
@@ -44,22 +64,28 @@ def test_compare(N_satellites, cities_coordinates, cities_weights, puissance = 1
     weight_sum = sum(cities_weights)
     cities_weights = np.array([w/weight_sum for w  in cities_weights])
     
-    centroids = KMeans2(cities_coordinates, cities_weights, return_after=return_after, n=N_satellites)
+    #centroids = KMeans2(cities_coordinates, cities_weights, return_after=return_after, n=N_satellites)
     
     centroids = np.array(centroids)
     #res = np.append(centroids[:, 0], centroids[:, 1])
     return centroids[:, 0], centroids[:, 1]
 
 
-def KMeans(data, weights, n=2, tol=0.001, max_iter=300):
-    centroids = np.zeros((n, 2))
+def KMeans(problem, centroids=None, n=-1, tol=0.001, max_iter=300):
+    if n == -1:
+        n = problem.N_satellites
+    data = problem.cities_coordinates
+    weights = problem.cities_weights
     
-    for j in range(n):
-        centroids[j] = np.array(data[floor(rnd.random()*len(data))])
+    
+    if centroids is None:
+        centroids = np.zeros((n, 2))
+        for j in range(n):
+            centroids[j] = data[floor(rnd.random()*len(data))][:2]
+    
 
     for _ in range(max_iter):
         classif = {i:{} for i in range(n)}
-
         for i in range(len(data)):
             dist = [np.linalg.norm(data[i] - c) for c in centroids]
 
@@ -83,8 +109,9 @@ def KMeans(data, weights, n=2, tol=0.001, max_iter=300):
                 optimized = False
         if optimized:
             break            
+    problem.satellites_position = centroids
+    problem.method = "kmeans"
     return centroids
-
 
 # Idée : chaque point a son cluster initialement. A chaque itération, trier les distances entre chaque centroïde en ordre croissant.
 # Joindre la première paire la plus proche qui respecte encore les >80% de couverture quand on fait la moyenne des 2 centroïdes
@@ -116,8 +143,10 @@ def weighted_mid(p1, p2, w1, w2):
     return p1*w1/(w1+w2) + p2*w2/(w1+w2)
 
 # prendre en compte la hauteur du satellite
-def KMeans2(data, weights, n=10, tol=0.001, max_iter=300, return_after=999999):
-    # (x, y, w)
+def KMeans2(problem, centroids=None, tol=0.001, max_iter=300, return_after=-1):
+    n = problem.N_satellites
+    data = problem.cities_coordinates
+    weights = problem.cities_weights
     centroids = []
     for i in range(len(data)):
         centroids.append((*data[i], weights[i]))
@@ -151,8 +180,53 @@ def KMeans2(data, weights, n=10, tol=0.001, max_iter=300, return_after=999999):
         
         
         i+=1
-        print(i, len(centroids), return_after)
         if len(centroids) <= return_after:
             print("--------")
-            return centroids[:, :2]
-    return centroids[:, :2]
+            problem.satellites_position = centroids[:, :2]
+            return 
+    problem.satellites_position = centroids[:, :2]
+    problem.method = "kmeans2"
+
+
+# Idée: La couverture d'une ville est le min entre la somme des 1/R² pour chaque satellite et le seuil d'une ville
+
+def score3(points, weights, centroids, excluded_centroid):
+    """
+    Args:
+        point: tuple (x, y, w)
+        params centroids: tableau de tuples (x, y)
+    
+    Returns:
+        float: score
+    """
+    return sum([min(weights[ip], sum([1/H**2 if (H:=dist(points[ip], c)) else 1 for c in centroids if not np.equal(c, excluded_centroid).all()])) for ip in range(len(points))])
+
+# Idée: Un satellite par ville initialement, retirer celui de moindre couverture et re-run KMeans 
+# jusqu'à atteindre le nombre de satellite requis
+
+def KMeans3(problem, centroids=None, tol=0.001, max_iter=300):
+    n = problem.N_satellites
+    data = problem.cities_coordinates
+    weights = problem.cities_weights
+    centroids = np.copy(data)
+
+    i = 0
+    # ((score, 0, 0), (x1, y1, w1), (x2, y2, w2))
+    # 0 are dummys
+    while i < max_iter and len(centroids) > n:
+        scores = []
+        for i1 in range(len(centroids)):
+            scores.append(((score3(data, weights, centroids, centroids[i1]), 0), centroids[i1]))
+        scores = np.array(scores)
+
+        sorted_indices = np.argsort(scores[:, 0, 0])
+        sorted_scores = scores[sorted_indices]
+
+        worst = sorted_scores[-1]   
+
+        centroids = np.delete(centroids, [np.equal(c, worst[1]).all() for c in centroids], 0)
+        centroids = KMeans(problem, tol=tol, centroids=centroids, n=len(centroids), max_iter=max_iter)
+        print(len(centroids))
+        i+=1
+    problem.satellites_position = centroids
+    problem.method = "kmeans3"

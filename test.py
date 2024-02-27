@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from kmeans import euclidean_satellites_repartition, test_compare
+from kmeans import euclidean_satellites_repartition, euclidean_satellites_repartition2, test_compare
 
 l = 12742 # [km] largeur  approximative de la terre
 L = 40030 # [km] longueur approximative de la terre
@@ -16,7 +16,7 @@ def test(func, i=-1, title="None"):
     if i >= 0:
         Xs, Ys = func(N_satellites, np.vstack((X,Y)).T, cost, return_after=i)
     else:
-        Xs, Ys = func(N_satellites, np.vstack((X, Y).T), cost)
+        Xs, Ys = func(N_satellites, np.vstack((X, Y)).T, cost)
     a = str(i)
     plt.figure()
     for x,y,c in zip(X,Y,cost) :
@@ -29,9 +29,10 @@ def test(func, i=-1, title="None"):
     plt.axis('equal')
 
     plt.title(title + " " + a)
-    plt.show()
 
-#test(euclidean_satellites_repartition, 20, "Kmeans")
-for i in range(len(X), N_satellites-1, -1):
-    test(test_compare, i, "Pas Kmeans")
+test(euclidean_satellites_repartition, title="Kmeans")
+test(euclidean_satellites_repartition2, title="Kmeans3")
+plt.show()
+#for i in range(len(X), N_satellites-1, -1):
+#    test(test_compare, i, "Pas Kmeans")
 

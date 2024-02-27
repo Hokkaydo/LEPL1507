@@ -5,6 +5,8 @@ from math import *
 from scipy.optimize import *
 import random as rnd
 
+from kmeans import KMeans, KMeans2, KMeans3
+
 """A package to make a comparison between different algorithms to solve the problem of finding the best position for N satellites
 in a 2D space and in a spherical space to cover a set of cities with different weights.
 """
@@ -65,6 +67,11 @@ class EuclidianProblem:
     def plot(self):
         plt.scatter(self.cities_coordinates[:, 0], self.cities_coordinates[:, 1], s=self.cities_weights*100)
         plt.scatter(self.satellites_position[:, 0], self.satellites_position[:, 1], c='r')
+        for i in range(len(self.satellites_position)) :
+            #plt.plot(cities_coordinates[i, 0], cities_coordinates[i, 1], 'or')
+            for r in [0.01, 0.03, 0.05, 0.07, 0.09]:
+                circle = plt.Circle((self.satellites_position[i, 0], self.satellites_position[i, 1]), r, color='r', fill=False)
+                plt.gca().add_patch(circle)
         plt.show()
         
 
@@ -121,27 +128,25 @@ cities_coordinates = np.random.rand(10, 2)
 cities_weights = np.random.rand(10)
 height = 0.01
 power = 0.01
-N_satellites = 2
+N_satellites = 5
 problem1 = EuclidianProblem(N_satellites, cities_coordinates, cities_weights, height, power)
+#print(problem1)
+#problem1.plot()
+#KMeans(problem1)
+#print(problem1)
+#problem1.plot()
+#KMeans2(problem1)
+#print(problem1)
+#problem1.plot()
+KMeans3(problem1)
 print(problem1)
 problem1.plot()
-stupid_euclidean_satellites_repartition(problem1)
-print(problem1)
-problem1.plot()
-kmeans_euclidean_satellites_repartition(problem1)
-print(problem1)
-problem1.plot()
+print("KM3 cov: ", problem1.coverage())
 
-sumStupid = 0
-sumKmeans = 0
-for i in range(10):
-    stupid_euclidean_satellites_repartition(problem1)
-    sumStupid += problem1.coverage()
-    kmeans_euclidean_satellites_repartition(problem1)
-    sumKmeans += problem1.coverage()
-print("Average coverage for stupid method: ", sumStupid/10)
-print("Average coverage for kmeans method: ", sumKmeans/10)
-    
+#stupid_euclidean_satellites_repartition(problem1)
+#print(problem1)
+#problem1.plot()
+
 
     
 
