@@ -186,6 +186,7 @@ def KMeans2(problem, centroids=None, tol=0.001, max_iter=300, return_after=-1):
             return 
     problem.satellites_position = centroids[:, :2]
     problem.method = "kmeans2"
+    return centroids[:, :2]
 
 
 # Idée: La couverture d'une ville est le min entre la somme des 1/R² pour chaque satellite et le seuil d'une ville
@@ -216,6 +217,7 @@ def KMeans3(problem, centroids=None, tol=0.001, max_iter=300):
     while i < max_iter and len(centroids) > n:
         scores = []
         for i1 in range(len(centroids)):
+            print("Scoring", i1)
             scores.append(((score3(data, weights, centroids, centroids[i1]), 0), centroids[i1]))
         scores = np.array(scores)
 
@@ -225,8 +227,8 @@ def KMeans3(problem, centroids=None, tol=0.001, max_iter=300):
         worst = sorted_scores[-1]   
 
         centroids = np.delete(centroids, [np.equal(c, worst[1]).all() for c in centroids], 0)
+        print("Kmeans", i)
         centroids = KMeans(problem, tol=tol, centroids=centroids, n=len(centroids), max_iter=max_iter)
-        print(len(centroids))
         i+=1
     problem.satellites_position = centroids
     problem.method = "kmeans3"
