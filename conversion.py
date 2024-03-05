@@ -1,8 +1,8 @@
 from math import sqrt, acos, sin, cos
 def polar(x, y, z):
     r = sqrt(x**2 + y**2 + z**2)
-    theta = acos(z/r)
-    phi = y/abs(y)*x/sqrt(x**2 + y**2)
+    phi = acos(z/r)
+    theta = y/abs(y)*x/sqrt(x**2 + y**2)
     return r, phi, theta
 
 def cartesian(r, phi, theta):
