@@ -1,8 +1,10 @@
+from math import sqrt
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
 from plotly.offline import plot
 import kmeans
+import conversion
 
 fig = go.Figure()
 size = 50
@@ -17,19 +19,23 @@ cities = []
 for i in range (n_cities) :
     phi = np.random.rand() * 2*np.pi
     theta = np.random.rand() * np.pi
-    cities.append((phi, theta))
-    #cities.append([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)])
+    #cities.append((phi, theta))
+    cities.append([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)])
 cities = r * np.array(cities)
 cities_weights = np.random.randint(1, 100, n_cities)
 
-satellites = kmeans.spherical_kmeans(cities, [], n_sat)
-
+# shape (n, 3)
+satellites_cart = kmeans.spherical_kmeans(cities, [], n_sat)
 
 def spherical_to_lat_long(data):
-    return 180/np.pi * r * data
+    return 180/np.pi * data
 
-satellites_lat, satellites_long = spherical_to_lat_long(satellites.T)
-cities_lat, cities_long = spherical_to_lat_long(cities.T)
+print(conversion.polar(*satellites_cart.T))
+satellites_polar = np.array(conversion.polar(*satellites_cart.T))[1:]
+cities_polar = np.array(conversion.polar(*cities.T))[1:]
+
+satellites_lat, satellites_long = spherical_to_lat_long(satellites_polar)
+cities_lat, cities_long = spherical_to_lat_long(cities_polar)
 
 
 #Data Creation
@@ -44,14 +50,14 @@ citiesdf = pd.DataFrame(citiesd)
 
 # Coverage circles
 
-t = np.linspace(0, 2*np.pi, 100)
+t = np.linspace(0, 2*np.pi, 100)*180/np.pi
 R = 15 
-Rcost = R*np.cos(t)
-Rsint = R*np.sin(t)
+Rcost = t#R*np.cos(t)*180/np.pi
+Rsint = t#R*np.sin(t)*180/np.pi
 
-for i in range(n_sat):
-    lon, lat = Rcost + satellites_lat[i], Rsint + satellites_long[i]
-    fig.add_trace(go.Scattergeo(mode = "lines",lon = lon,lat = lat,marker = {'size': 10,'color': satsd['colorcode'],'colorscale':'jet','colorbar_thickness':20}))
+#for i in range(n_sat):
+lon, lat = Rsint + satellites_lat[3], Rcost + satellites_long[3]
+#fig.add_trace(go.Scattergeo(mode = "lines",lon = lon,lat = lat,marker = {'size': 10,'color': satsd['colorcode'],'colorscale':'jet','colorbar_thickness':20}))
 
 
 fig.add_trace(go.Scattergeo(mode = "markers",lon = satsdf['Lon'],lat = satsdf['Lat'],marker = {'size': 10,'color': satsd['colorcode'],'colorscale':'jet','colorbar_thickness':20}))
@@ -85,44 +91,5 @@ fig.update_layout(  geo = dict(
 
 
 
-R = 0.75
-center_lon = 9.18951
-center_lat = 45.46427
-t = np.linspace(0, 2*np.pi, 100)
-circle_lon =center_lon + R*np.cos(t)
-circle_lat =center_lat +  R*np.sin(t)
-
-
-coords=[]
-for lo, la in zip(list(circle_lon), list(circle_lat)):
-    coords.append([lo, la]) 
-
-layers=[dict(sourcetype = 'geojson',
-             source={ "type": "Feature",
-                     "geometry": {"type": "LineString",
-                                  "coordinates": coords
-                                  }
-                    },
-             color=   'red',
-             type = 'line',   
-             line=dict(width=1.5)
-            )]
-
-fig.update_layout(
-    title_text='Your title',
-    width=850,
-    height=850,
-    mapbox=dict(
-        #accesstoken="",
-        layers=layers,
-        bearing=0,
-        center=dict(
-            lat=45.8257,
-            lon=10.8746, 
-        ),
-        pitch=0,
-        zoom=5.6,
-        style='outdoors')
-   )
 plot(fig)
 

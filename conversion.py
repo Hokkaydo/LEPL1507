@@ -1,5 +1,4 @@
-from math  import sqrt, acos, atan, sin, cos
-from numpy import pi, sign
+from numpy import arcsin, pi, sign, sqrt, arccos, sin, cos
 
 def polar(x, y, z) :
     """
@@ -15,9 +14,8 @@ def polar(x, y, z) :
     - theta = 
     """
     r = sqrt(x**2 + y**2 + z**2)
-    phi = acos(z/r)
-    theta = acos(x/sqrt(x**2 + y**2))
-    theta = acos(x/sqrt(x**2 + y**2)) + pi*(1 - sign(x))/2
+    phi = arcsin(z/r)
+    theta = arccos(x/(cos(phi)*r))
     return r, phi, theta
 
 def cartesian(r, phi, theta) :
