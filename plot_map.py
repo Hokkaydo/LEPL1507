@@ -1,11 +1,8 @@
 
 import geopandas as gpd
-import matplotlib.pyplot as plt
 import numpy as np
-import sys
-import pandas as pd
 from math import asin
-import requests
+import math
 import plotly.graph_objects as go
 from plotly.offline import plot
 
@@ -106,7 +103,7 @@ def draw_circle_on_sphere(p:float, a:float, radius:float):
 
 
 
-def cities_coord(lon, lats):
+def cities_coord(lons, lats):
     '''
         Convert the latitude and longitude of the cities to the spherical coordinates
             
@@ -156,6 +153,7 @@ def plot_satellite(pol, azi, rad):
         x, y, z = draw_circle_on_sphere(p, a, rad)
         fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,255)', width = 10), showlegend=False) )
 
-
+def plot_fig():
+    plot(fig)
 fig.write_html("3d_plot.html")
-plot(fig)
+plot_fig()
