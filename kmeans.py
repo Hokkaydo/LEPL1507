@@ -383,7 +383,7 @@ def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_ite
     while old_centroids is None or iteration < max_iter:
         old_centroids = centroids
         y = np.argmin(centroids@cities_coordinates.T, axis=0)
-        print(y)
+        #print(y)
         for k in range(N_satellites):
             Xk = cities_coordinates[[y[i] == k for i in range(n)]]
             s = np.sum(Xk, axis=0)
@@ -393,7 +393,7 @@ def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_ite
                 centroids[k] = cities_coordinates[rnd.randrange(n)]
                 continue
             centroids[k] = s/norm
-        print("iter =", iteration)
+        #print("iter =", iteration)
         iteration+=1
-    print(centroids)
+    #print(centroids)
     return centroids

@@ -45,7 +45,7 @@ citiesdf = pd.DataFrame(citiesd)
 # Coverage circles
 
 t = np.linspace(0, 2*np.pi, 100)
-R = 40 
+R = 15 
 Rcost = R*np.cos(t)
 Rsint = R*np.sin(t)
 
