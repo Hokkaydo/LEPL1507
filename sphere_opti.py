@@ -12,8 +12,8 @@ max_dist = R*cos_theta - np.sqrt((R**2)*(cos_theta**2) - R**2 + r**2) # maximal 
 I_ok = (10**((-67-30)/10))*1e4 # Intensity required to satisfy perfectly 10 000 residents
 Pt = 50 # Transmission power of a satellite
 
-n_cit = 200 # Number of cities
-n_sat = 100 # Number of satellites
+n_cit = 50 # Number of cities
+n_sat = 10 # Number of satellites
 
 # FIGURE
 fig = plt.figure()
@@ -71,13 +71,17 @@ def cost_satellite(satellite) :
 
 # Optimization
 print (f"Initial cost of satellites is {-cost(satellites)}")
-res = so.minimize(cost, satellites, method='Nelder-Mead', bounds=so.Bounds(0, 2*np.pi)) # Change bounds for theta
-result = np.reshape(res.x, (len(satellites)//2, 2))
-if (not res.success) : print(f"Error : {res.message}")
-else : print(f"Everything went successfully ! Message : {res.message}")
-print(f"Cost after optimization is {-cost(res.x)}")
-ax.scatter(r*np.sin(result[:,1])*np.cos(result[:,0]), r*np.sin(result[:,1])*np.sin(result[:,0]), r*np.cos(result[:,1]), color='lawngreen', label = "Optimal position of the satellites")
+for method in ["Powell", "Nelder-Mead", "Powell"] :
+    old_satellites = np.copy(satellites)
+    print(method)
+    res = so.minimize(cost, satellites, method=method, bounds=so.Bounds(0, 2*np.pi)) # Change bounds for theta
+    result = np.reshape(res.x, (len(satellites)//2, 2))
+    if (not res.success) : print(f"Error : {res.message}")
+    else : print(f"Everything went successfully ! Message : {res.message}")
+    print(f"Cost after optimization is {-cost(res.x)}")
+    satellites = old_satellites
+"""ax.scatter(r*np.sin(result[:,1])*np.cos(result[:,0]), r*np.sin(result[:,1])*np.sin(result[:,0]), r*np.cos(result[:,1]), color='lawngreen', label = "Optimal position of the satellites")
 ax.set_aspect('equal')
 plt.tight_layout()
 plt.legend()
-plt.show()
+plt.show()"""
