@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as so
+import kmeans
 
 # DATA
 r = 6371 # [km] mean radius of Earth
@@ -34,6 +35,7 @@ for i in range (n_cit) :
 cities = r * np.array(cities)
 cities_weights = np.random.randint(1, 100, n_cit)
 
+
 print(f"Maximal intensity required is {np.sum(cities_weights)*I_ok}")
 ax.scatter(cities[:,0], cities[:,1], cities[:,2], color='purple', label="Cities")
 
@@ -44,7 +46,7 @@ for i in range (n_sat) :
     theta = np.random.rand() * np.pi
     satellites.append([phi, theta])
 satellites = np.array(satellites)
-ax.scatter(r*np.sin(satellites[:,1])*np.cos(satellites[:,0]), r*np.sin(satellites[:,1])*np.sin(satellites[:,0]), r*np.cos(satellites[:,1]), color='red', label="Initial position of satellites")
+#ax.scatter(r*np.sin(satellites[:,1])*np.cos(satellites[:,0]), r*np.sin(satellites[:,1])*np.sin(satellites[:,0]), r*np.cos(satellites[:,1]), color='red', label="Initial position of satellites")
 satellites = np.reshape(satellites, 2*len(satellites))
 
 # Cost function
@@ -71,6 +73,7 @@ def cost_satellite(satellite) :
 
 # Optimization
 print (f"Initial cost of satellites is {-cost(satellites)}")
+
 for method in ["Powell", "Nelder-Mead", "Powell"] :
     old_satellites = np.copy(satellites)
     print(method)
@@ -85,3 +88,15 @@ ax.set_aspect('equal')
 plt.tight_layout()
 plt.legend()
 plt.show()"""
+#res = so.minimize(cost, satellites, method='Nelder-Mead', bounds=so.Bounds(0, 2*np.pi)) # Change bounds for theta
+#result = np.reshape(res.x, (len(satellites)//2, 2))
+result = kmeans.spherical_kmeans(cities, [], N_satellites=n_sat)*r
+#if (not res.success) : print(f"Error : {res.message}")
+#else : print(f"Everything went successfully ! Message : {res.message}")
+#print(f"Cost after optimization is {-cost(res.x)}")
+ax.scatter(r*np.sin(result[:,1])*np.cos(result[:,0]), r*np.sin(result[:,1])*np.sin(result[:,0]), r*np.cos(result[:,1]), color='lawngreen', label = "Optimal position of the satellites")
+
+ax.set_aspect('equal')
+plt.tight_layout()
+plt.legend()
+plt.show()
