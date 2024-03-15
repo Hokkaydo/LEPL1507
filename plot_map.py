@@ -9,7 +9,7 @@ from plotly.offline import plot
 def plot_back(fig):
     """back half of sphere"""
     clor=f'rgb(220, 220, 220)'
-    R = np.sqrt(6368.134)
+    R = np.sqrt(6268.134)
     u_angle = np.linspace(0, np.pi, 25)
     v_angle = np.linspace(0, np.pi, 25)
     x_dir = np.outer(R*np.cos(u_angle), R*np.sin(v_angle))
@@ -21,7 +21,7 @@ def plot_back(fig):
 def plot_front(fig):
     """front half of sphere"""
     clor=f'rgb(220, 220, 220)'
-    R = np.sqrt(6368.134)
+    R = np.sqrt(6268.134)
     u_angle = np.linspace(-np.pi, 0, 25)
     v_angle = np.linspace(0, np.pi, 25)
     x_dir = np.outer(R*np.cos(u_angle), R*np.sin(v_angle))
@@ -39,19 +39,10 @@ def plot_polygon(poly):
     lon = lon * np.pi/180
     lat = lat * np.pi/180
     
-    R = 6378.134
+    R = 6268.134
     x = R * np.cos(lat) * np.cos(lon)
     y = R * np.cos(lat) * np.sin(lon)
     z = R * np.sin(lat)
-    
-    return x, y, z
-
-def plot_orbit() :
-    angle = np.linspace(0, 2.0*np.pi, 144)
-    R = 6878.134
-    x = R*np.cos(angle)
-    y = R*np.sin(angle)
-    z = np.zeros(144)
     
     return x, y, z
 
@@ -92,16 +83,17 @@ def draw_circle_on_sphere(p:float, a:float, radius:float):
         Returns:
             Circular scatter points on a spherical surface
     '''
-    v = asin(radius/6371)
-    u = np.mgrid[0:2*np.pi:30j]
-    
-    x = (np.sin(v)*np.cos(p)*np.cos(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.cos(a) - np.sin(v)*np.sin(a)*np.sin(u))*6418.134
-    y = (np.sin(v)*np.cos(p)*np.sin(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.sin(a) + np.sin(v)*np.cos(a)*np.sin(u))*6418.134
-    z = -np.sin(v)*np.sin(p)*np.cos(u)*6418.134 + np.cos(v)*np.cos(p)*6418.134
-    
+    x = []; y = []; z = []
+    for i in range(1,100):
+        v = asin(radius/(6371*i))
+        u = np.mgrid[0:2*np.pi:30j]
+        x1 = (np.sin(v)*np.cos(p)*np.cos(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.cos(a) - np.sin(v)*np.sin(a)*np.sin(u))*(6528.134)
+        y1 = (np.sin(v)*np.cos(p)*np.sin(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.sin(a) + np.sin(v)*np.cos(a)*np.sin(u))*6528.134
+        z1 = -np.sin(v)*np.sin(p)*np.cos(u)*6528.134 + np.cos(v)*np.cos(p)*6528.134
+        x.append(x1) ; y.append(y1) ; z.append(z1)
+        
     return x, y, z
-
-
+    
 
 def cities_coord(lons, lats):
     '''
@@ -151,7 +143,8 @@ def plot_satellite(pol, azi, rad):
     '''    
     for p, a in zip(pol, azi):
         x, y, z = draw_circle_on_sphere(p, a, rad)
-        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,255)', width = 10), showlegend=False) )
+        clor =f'rgb(0, 0, 200)'
+        fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.7, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig():
     plot(fig)
