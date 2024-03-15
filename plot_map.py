@@ -6,29 +6,17 @@ import math
 import plotly.graph_objects as go
 from plotly.offline import plot
 
-def plot_back(fig):
+def plot_earth(fig):
     """back half of sphere"""
-    clor=f'rgb(220, 220, 220)'
+    col=f'rgb(220, 220, 220)'
     R = np.sqrt(6268.134)
-    u_angle = np.linspace(0, np.pi, 25)
-    v_angle = np.linspace(0, np.pi, 25)
-    x_dir = np.outer(R*np.cos(u_angle), R*np.sin(v_angle))
-    y_dir = np.outer(R*np.sin(u_angle), R*np.sin(v_angle))
-    z_dir = np.outer(R*np.ones(u_angle.shape[0]), R*np.cos(v_angle))
-    fig.add_surface(z=z_dir, x=x_dir, y=y_dir, colorscale=[[0, clor], [1, clor]], opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1)) # opacity=fig.sphere_alpha, colorscale=[[0, fig.sphere_color], [1, fig.sphere_color]])
-
-
-def plot_front(fig):
-    """front half of sphere"""
-    clor=f'rgb(220, 220, 220)'
-    R = np.sqrt(6268.134)
-    u_angle = np.linspace(-np.pi, 0, 25)
-    v_angle = np.linspace(0, np.pi, 25)
-    x_dir = np.outer(R*np.cos(u_angle), R*np.sin(v_angle))
-    y_dir = np.outer(R*np.sin(u_angle), R*np.sin(v_angle))
-    z_dir = np.outer(R*np.ones(u_angle.shape[0]), R*np.cos(v_angle))
-    fig.add_surface(z=z_dir, x=x_dir, y=y_dir, colorscale=[[0, clor], [1, clor]], opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1)) # opacity=fig.sphere_alpha, colorscale=[[0, fig.sphere_color], [1, fig.sphere_color]])
-        
+    phi = np.linspace(0,2* np.pi, 15)
+    theta = np.linspace(0, np.pi, 15)
+    x = np.outer(R*np.cos(phi), R*np.sin(theta))
+    y = np.outer(R*np.sin(phi), R*np.sin(theta))
+    z = np.outer(R*np.ones(phi.shape[0]), R*np.cos(theta))
+    fig.add_surface(x=x, y=y, z=z, colorscale=[[0, col], [1, col]], showscale = False, opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1))
+       
 
 def plot_polygon(poly):
     
@@ -49,8 +37,7 @@ def plot_polygon(poly):
 # Read the shapefile.  Creates a DataFrame object
 gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
 fig = go.Figure()
-plot_front(fig)
-plot_back(fig)
+plot_earth(fig)
 
 marker = dict(color=[f'rgb({np.random.randint(0,256)}, {np.random.randint(0,256)}, {np.random.randint(0,256)})' for _ in range(25)],
            size=10)
@@ -144,6 +131,7 @@ def plot_satellite(pol, azi, rad):
     for p, a in zip(pol, azi):
         x, y, z = draw_circle_on_sphere(p, a, rad)
         clor =f'rgb(0, 0, 200)'
+
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.7, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig():
