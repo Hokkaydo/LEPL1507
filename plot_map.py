@@ -6,8 +6,8 @@ import math
 import plotly.graph_objects as go
 from plotly.offline import plot
 
-def plot_earth(fig):
-    """back half of sphere"""
+def plot_sphere(fig):
+    """plot sphere"""
     col=f'rgb(220, 220, 220)'
     R = np.sqrt(6268.134)
     phi = np.linspace(0,2* np.pi, 15)
@@ -34,30 +34,21 @@ def plot_polygon(poly):
     
     return x, y, z
 
-# Read the shapefile.  Creates a DataFrame object
-gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
-fig = go.Figure()
-plot_earth(fig)
-
-marker = dict(color=[f'rgb({np.random.randint(0,256)}, {np.random.randint(0,256)}, {np.random.randint(0,256)})' for _ in range(25)],
-           size=10)
-
-for i in gdf.index :
-    # print(gdf.loc[i].NAME)            # Call a specific attribute
+def plot_countries(fig, file):
+    for i in file.index :
+        # print(gdf.loc[i].NAME)            # Call a specific attribute
     
-    polys = gdf.loc[i].geometry         # Polygons or MultiPolygons
+        polys = file.loc[i].geometry         # Polygons or MultiPolygons
     
-    if polys.geom_type == 'Polygon':
-        x, y, z = plot_polygon(polys)
-        fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,0)'), showlegend=False) )
-        
-    elif polys.geom_type == 'MultiPolygon':
-        
-        for poly in polys.geoms:
-            x, y, z = plot_polygon(poly)
+        if polys.geom_type == 'Polygon':
+            x, y, z = plot_polygon(polys)
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,0)'), showlegend=False) )
-            
-
+        
+        elif polys.geom_type == 'MultiPolygon':
+        
+            for poly in polys.geoms:
+                x, y, z = plot_polygon(poly)
+                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,0)'), showlegend=False) )
 
 def draw_circle_on_sphere(p:float, a:float, radius:float):
     '''
@@ -97,9 +88,9 @@ def cities_coord(lons, lats):
     for lat, lon in zip(lats, lons):
         lat_rad = math.radians(lat)
         lon_rad = math.radians(lon)
-        x = math.cos(lat_rad) * math.cos(lon_rad)*6418.134
-        y = math.cos(lat_rad) * math.sin(lon_rad)*6418.134
-        z = math.sin(lat_rad)*6418.134
+        x = math.cos(lon_rad) * math.cos(lat_rad)*6418.134
+        y = math.cos(lon_rad) * math.sin(lat_rad)*6418.134
+        z = math.sin(lon_rad)*6418.134
         x_coords.append(x)
         y_coords.append(y)
         z_coords.append(z)
@@ -134,7 +125,13 @@ def plot_satellite(pol, azi, rad):
 
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.7, showlegend=False, lighting=dict(diffuse=0.1))
 
-def plot_fig():
-    plot(fig)
+def plot_fig(figure):
+    # Read the shapefile.  Creates a DataFrame object
+    gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+    plot_sphere(figure)
+    plot_countries(figure, gdf)
+    plot(figure)
+    
+fig = go.Figure()
 fig.write_html("3d_plot.html")
-plot_fig()
+plot_fig(fig)
