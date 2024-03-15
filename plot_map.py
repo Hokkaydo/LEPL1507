@@ -73,7 +73,7 @@ def draw_circle_on_sphere(p:float, a:float, radius:float):
     return x, y, z
     
 
-def cities_coord(lons, lats):
+def spherical_coords(lons, lats):
     '''
         Convert the latitude and longitude of the cities to the spherical coordinates
             
@@ -106,7 +106,7 @@ def plot_cities(lons, lats):
         Returns:
             None
     '''
-    x, y, z = cities_coord(lats, lons)
+    x, y, z = spherical_coords(lats, lons)
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(255, 0,0)', width = 10), showlegend=False ) )
     
 def plot_satellite(pol, azi, rad):
