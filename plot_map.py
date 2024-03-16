@@ -141,19 +141,26 @@ fig.update_layout(
         zaxis =dict(visible=False)
         )
     )
-pol = [np.pi/4, np.pi/3, np.pi/2]
-#vecteur azi pour plot_satellite
-azi = [np.pi, np.pi/2, 0, 3*np.pi/2]
-#radius pour plot_satellite
-rad = 3000
-plot_satellite(pol, azi, rad)
-#vecteur lons pour plot_cities
-latss = [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
-        51.5074, 48.8566, 52.5200, 55.7558, 39.9042,
-        35.6895, -33.8688, -23.5505, 19.4326, 19.0760]
-lonss = [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
-        -0.1278, 2.3522, 13.4050, 37.6176, 116.4074,
-        139.6917, 151.2093, -46.6333, -99.1332, 72.8777]
-plot_cities(lonss, latss)
+    
+#Exemple de villes et satellites
+def test():
+    pol = [np.pi/4, np.pi/3, np.pi/2]
+    #vecteur azi pour plot_satellite
+    azi = [np.pi, np.pi/2, 0, 3*np.pi/2]
+    #radius pour plot_satellite
+    rad = 3000
+    plot_satellite(pol, azi, rad)
+    #vecteur lons pour plot_cities
+    latss = [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
+            51.5074, 48.8566, 52.5200, 55.7558, 39.9042,
+            35.6895, -33.8688, -23.5505, 19.4326, 19.0760]
+    lonss = [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
+            -0.1278, 2.3522, 13.4050, 37.6176, 116.4074,
+            139.6917, 151.2093, -46.6333, -99.1332, 72.8777]
+    plot_cities(lonss, latss)
+    
+#affiche un exemple de villes et de satellites
+test()
+
 fig.write_html("3d_plot.html")
 plot_fig(fig)
