@@ -131,7 +131,14 @@ def plot_fig(figure):
     plot_sphere(figure)
     plot_countries(figure, gdf)
     plot(figure)
-    
+
 fig = go.Figure()
+fig.update_layout(
+    scene = dict(
+        xaxis = dict(visible=False),
+        yaxis = dict(visible=False),
+        zaxis =dict(visible=False)
+        )
+    )
 fig.write_html("3d_plot.html")
 plot_fig(fig)
