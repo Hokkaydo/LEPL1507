@@ -62,8 +62,8 @@ def draw_circle_on_sphere(p:float, a:float, radius:float):
             Circular scatter points on a spherical surface
     '''
     x = []; y = []; z = []
-    for i in range(1,100):
-        v = asin(radius/(6371*i))
+    for i in range(6, 600):
+        v = asin(radius/(i*1000))
         u = np.mgrid[0:2*np.pi:30j]
         x1 = (np.sin(v)*np.cos(p)*np.cos(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.cos(a) - np.sin(v)*np.sin(a)*np.sin(u))*(6528.134)
         y1 = (np.sin(v)*np.cos(p)*np.sin(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.sin(a) + np.sin(v)*np.cos(a)*np.sin(u))*6528.134
