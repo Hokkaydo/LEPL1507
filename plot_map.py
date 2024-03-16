@@ -8,10 +8,10 @@ from plotly.offline import plot
 
 def plot_sphere(fig):
     """plot sphere"""
-    col=f'rgb(220, 220, 220)'
+    col=f'rgb(125, 125, 125)'
     R = np.sqrt(6268.134)
-    phi = np.linspace(0,2* np.pi, 15)
-    theta = np.linspace(0, np.pi, 15)
+    phi = np.linspace(0,2* np.pi, 45)
+    theta = np.linspace(0, np.pi, 45)
     x = np.outer(R*np.cos(phi), R*np.sin(theta))
     y = np.outer(R*np.sin(phi), R*np.sin(theta))
     z = np.outer(R*np.ones(phi.shape[0]), R*np.cos(theta))
@@ -42,13 +42,13 @@ def plot_countries(fig, file):
     
         if polys.geom_type == 'Polygon':
             x, y, z = plot_polygon(polys)
-            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,0)'), showlegend=False) )
+            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
         
         elif polys.geom_type == 'MultiPolygon':
         
             for poly in polys.geoms:
                 x, y, z = plot_polygon(poly)
-                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(0, 0,0)'), showlegend=False) )
+                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
 def draw_circle_on_sphere(p:float, a:float, radius:float):
     '''
@@ -105,7 +105,7 @@ def plot_cities(lons, lats):
             None
     '''
     x, y, z = spherical_coords(lats, lons)
-    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 10), showlegend=False ) )
+    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), showlegend=False ) )
     
 def plot_satellite(pol, azi, rad):
     '''
@@ -123,8 +123,8 @@ def plot_satellite(pol, azi, rad):
         y1 = np.array([6350 * math.sin(p) * math.sin(a)])
         z1 = np.array([6350 * math.cos(p)])
         x, y, z = draw_circle_on_sphere(p, a, rad)
-        fig.add_trace(go.Scatter3d(x=x1, y=y1, z=z1, mode='markers', line=dict(color=f'rgb(0, 0, 100)', width = 4), showlegend=False ) )
-        fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.7, showlegend=False, lighting=dict(diffuse=0.1))
+        fig.add_trace(go.Scatter3d(x=x1, y=y1, z=z1, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
+        fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig(figure):
     # Read the shapefile.  Creates a DataFrame object
@@ -141,5 +141,19 @@ fig.update_layout(
         zaxis =dict(visible=False)
         )
     )
+pol = [np.pi/4, np.pi/3, np.pi/2]
+#vecteur azi pour plot_satellite
+azi = [np.pi, np.pi/2, 0, 3*np.pi/2]
+#radius pour plot_satellite
+rad = 3000
+plot_satellite(pol, azi, rad)
+#vecteur lons pour plot_cities
+latss = [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
+        51.5074, 48.8566, 52.5200, 55.7558, 39.9042,
+        35.6895, -33.8688, -23.5505, 19.4326, 19.0760]
+lonss = [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
+        -0.1278, 2.3522, 13.4050, 37.6176, 116.4074,
+        139.6917, 151.2093, -46.6333, -99.1332, 72.8777]
+plot_cities(lonss, latss)
 fig.write_html("3d_plot.html")
 plot_fig(fig)
