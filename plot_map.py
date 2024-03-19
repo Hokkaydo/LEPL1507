@@ -54,8 +54,8 @@ def draw_circle_on_sphere(a:float, p:float, radius:float):
     '''
         Parametric equation determined by the radius and angular positions (both polar and azimuthal relative to the z-axis) of the circle on the spherical surface
         Parameters:
-            p (float): polar angle
-            a (float): azimuthal angle
+            a (float): polar angle
+            p (float): azimuthal angle
             radius (float): radius of the circle
             
         Returns:
