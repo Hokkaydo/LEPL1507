@@ -47,7 +47,13 @@ t.add_trace(go.Scatter3d(x=satellites_cart.T[0], y=satellites_cart.T[1],z=satell
 t.add_trace(go.Scatter3d(x=cities.T[0], y=cities.T[1], z=cities.T[2], mode="markers", line=dict(color="red")))
 print("Rad sats", np.linalg.norm(satellites_cart, axis=1))
 print("Rad cities", np.linalg.norm(cities, axis=1))
-
+t.update_layout(
+        scene = dict (
+        xaxis = dict(nticks=4, range=[-6371, 6371],),
+        yaxis = dict(nticks=4, range=[-6371, 6371],),
+        zaxis = dict(nticks=4, range=[-6371, 6371],),
+        )
+    )
 plot(t)
 
 import time
