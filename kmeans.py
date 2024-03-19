@@ -373,7 +373,9 @@ def polar_cos(theta1, phi1, theta2, phi2):
 
 def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_iter=300):
 
-    cities_coordinates/= np.linalg.norm(cities_coordinates)
+    for i in range(len(cities_coordinates)):
+        cities_coordinates[i] /= np.norm(cities_coordinates[i])
+    
     n = len(cities_coordinates)
     centroids = np.zeros((N_satellites, cities_coordinates.shape[1]))
     for i in range(N_satellites):
