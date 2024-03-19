@@ -161,4 +161,4 @@ cython_debug/
 
 # plots
 temp-plot.html
-3d-plot.html
+3d_plot.html
