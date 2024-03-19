@@ -38,13 +38,14 @@ print("sat polar\n", satellites_polar)
 print("sat cart\n", satellites_cart)
 print("cities polar\n", cities_polar)
 print("cities cart\n", cities)
-plot_map.plot_satellite(satellites_polar[0], satellites_cart[1], 2000)
+plot_map.plot_satellite(satellites_polar[0], satellites_polar[1], 2000)
 #plot_map.plot_fig()
 
 t = go.Figure()
 
 t.add_trace(go.Scatter3d(x=satellites_cart.T[0], y=satellites_cart.T[1],z=satellites_cart.T[2], mode="markers", line=dict(color="blue")))
 t.add_trace(go.Scatter3d(x=cities.T[0], y=cities.T[1], z=cities.T[2], mode="markers", line=dict(color="red")))
+
 print("Rad sats", np.linalg.norm(satellites_cart, axis=1))
 print("Rad cities", np.linalg.norm(cities, axis=1))
 t.update_layout(
