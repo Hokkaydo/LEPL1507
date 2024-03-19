@@ -132,15 +132,6 @@ def plot_fig():
     plot_sphere(fig)
     plot_countries(fig, gdf)
     plot(fig)
-
-fig = go.Figure()
-fig.update_layout(
-    scene = dict(
-        xaxis = dict(visible=False),
-        yaxis = dict(visible=False),
-        zaxis =dict(visible=False)
-        )
-    )
     
 def create_fig():
     global fig 
@@ -170,7 +161,7 @@ def test():
     plot_cities(lonss, latss)
     
 #affiche un exemple de villes et de satellites
-test()
+#test()
 
 fig.write_html("3d_plot.html")
 
