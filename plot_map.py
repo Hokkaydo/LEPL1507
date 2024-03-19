@@ -50,7 +50,7 @@ def plot_countries(fig, file):
                 x, y, z = plot_polygon(poly)
                 fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
-def draw_circle_on_sphere(p:float, a:float, radius:float):
+def draw_circle_on_sphere(a:float, p:float, radius:float):
     '''
         Parametric equation determined by the radius and angular positions (both polar and azimuthal relative to the z-axis) of the circle on the spherical surface
         Parameters:
