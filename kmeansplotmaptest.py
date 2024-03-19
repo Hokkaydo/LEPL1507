@@ -4,8 +4,8 @@ import numpy as np
 import conversion
 
 
-n_cities = 100
-n_sat = 10
+n_cities = 50
+n_sat = 5
 
 r = 6371
 
