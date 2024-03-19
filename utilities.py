@@ -29,7 +29,6 @@ def cart2spher(x, y, z) :
     - theta = arccos(z/r)
     """
     r = np.sqrt(x**2 + y**2 + z**2)
-    if x == 0 : phi = np.pi/2 + np.pi * (y < 0)
-    else : phi = np.arctan(y/x) + np.pi * (x < 0)
+    phi = np.array([np.pi/2 + np.pi * (y[i] < 0) if x[i] == 0 else np.arctan(y[i]/x[i]) + np.pi * (x[i] < 0) for i in range(len(x))])
     theta = np.arccos(z/r)
     return r, phi, theta

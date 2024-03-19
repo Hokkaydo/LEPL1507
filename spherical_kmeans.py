@@ -5,7 +5,6 @@ def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_ite
 
     for i in range(len(cities_coordinates)):
         cities_coordinates[i] /= np.linalg.norm(cities_coordinates[i])
-    
     n = len(cities_coordinates)
     centroids = np.zeros((N_satellites, cities_coordinates.shape[1]))
     for i in range(N_satellites):
@@ -20,11 +19,10 @@ def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_ite
             Xk = cities_coordinates[[y[i] == k for i in range(n)]]
             s = np.sum(Xk, axis=0)
             
-            if len(s) == 0:
+            if len(Xk) == 0:
                 centroids[k] = cities_coordinates[rnd.randrange(n)]
                 continue
-            centroids[k] = s/len(s)
+            centroids[k] = s/len(Xk)
         #print("iter =", iteration)
         iteration+=1
-    #print(centroids)
     return centroids
