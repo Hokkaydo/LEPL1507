@@ -32,5 +32,6 @@ satellites_lat, satellites_long = spherical_to_lat_long(satellites_polar)
 cities_lat, cities_long = spherical_to_lat_long(cities_polar)
 
 plot_map.plot_cities(cities_long, cities_lat)
+print(satellites_lat, satellites_long)
 plot_map.plot_satellite(satellites_lat, satellites_long, 2000)
 plot_map.plot_fig()
