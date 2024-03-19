@@ -163,5 +163,5 @@ def test():
 #affiche un exemple de villes et de satellites
 #test()
 
-fig.write_html("3d_plot.html")
+#fig.write_html("3d_plot.html")
 
