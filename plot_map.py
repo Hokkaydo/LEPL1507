@@ -126,19 +126,12 @@ def plot_satellite(pol, azi, rad):
         fig.add_trace(go.Scatter3d(x=x1, y=y1, z=z1, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
-def plot_fig(figure):
+def plot_fig():
     # Read the shapefile.  Creates a DataFrame object
     gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
-    plot_sphere(figure)
-    plot_countries(figure, gdf)
-    fig.update_layout(
-    scene = dict(
-        xaxis = dict(visible=False),
-        yaxis = dict(visible=False),
-        zaxis =dict(visible=False)
-        )
-    )
-    plot(figure)
+    plot_sphere(fig)
+    plot_countries(fig, gdf)
+    plot(fig)
 
 fig = go.Figure()
 fig.update_layout(
