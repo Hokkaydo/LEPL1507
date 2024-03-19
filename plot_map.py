@@ -117,7 +117,7 @@ def plot_satellite(pol, azi, rad):
         Returns:
             None
     '''
-    clor =f'rgb(0, 0, 200)'
+    clor =f'rgb(0, 0, 230)'
     for p, a in zip(pol, azi):
         x1 = np.array([6350 * math.sin(p) * math.cos(a)])
         y1 = np.array([6350 * math.sin(p) * math.sin(a)])
@@ -131,6 +131,13 @@ def plot_fig(figure):
     gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
     plot_sphere(figure)
     plot_countries(figure, gdf)
+    fig.update_layout(
+    scene = dict(
+        xaxis = dict(visible=False),
+        yaxis = dict(visible=False),
+        zaxis =dict(visible=False)
+        )
+    )
     plot(figure)
 
 fig = go.Figure()
@@ -142,13 +149,23 @@ fig.update_layout(
         )
     )
     
+def create_fig():
+    global fig 
+    fig = go.Figure()
+    fig.update_layout(
+    scene = dict(
+        xaxis = dict(visible=False),
+        yaxis = dict(visible=False),
+        zaxis =dict(visible=False)
+        )
+    )
 #Exemple de villes et satellites
 def test():
     pol = [np.pi/4, np.pi/3, np.pi/2]
     #vecteur azi pour plot_satellite
     azi = [np.pi, np.pi/2, 0, 3*np.pi/2]
     #radius pour plot_satellite
-    rad = 3000
+    rad = 4000
     plot_satellite(pol, azi, rad)
     #vecteur lons pour plot_cities
     latss = [40.7128, 34.0522, 41.8781, 29.7604, 33.4484,
@@ -163,4 +180,4 @@ def test():
 test()
 
 fig.write_html("3d_plot.html")
-plot_fig(fig)
+
