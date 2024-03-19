@@ -119,9 +119,9 @@ def plot_satellite(pol, azi, rad):
     '''
     clor =f'rgb(0, 0, 230)'
     for p, a in zip(pol, azi):
-        x1 = np.array([6350 * math.sin(p) * math.cos(a)])
-        y1 = np.array([6350 * math.sin(p) * math.sin(a)])
-        z1 = np.array([6350 * math.cos(p)])
+        x1 = np.array([6350 * math.sin(a) * math.cos(p)])
+        y1 = np.array([6350 * math.sin(a) * math.sin(p)])
+        z1 = np.array([6350 * math.cos(a)])
         x, y, z = draw_circle_on_sphere(p, a, rad)
         fig.add_trace(go.Scatter3d(x=x1, y=y1, z=z1, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
