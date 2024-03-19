@@ -5,31 +5,34 @@ Pt = 50                                                             # Transmissi
 beta = np.deg2rad(5)                                                # angle of covering of a satellite [rad]
 r = 6371                                                            # mean radius of Earth [km]
 R = r + 35786                                                       # geostationary radius [km]
-max_dist = R*np.cos(beta) - np.sqrt(r**2 - R**2 * np.sin(beta)**2)  # maximal distance at which a satellite has an impact
 I_min = (10**((-67-30)/10))*1e4                                     # Intensity required to satisfy perfectly 10 000 residents
 
 h = 1e-6 # for finite differences
 
 class Satellites_problem :
-    def __init__(self, cities, weights, n_sat) :
+    def __init__(self, cities, weights, n_sat, dim) :
         """
         cities  (list of tuples of float) : cartesian coordinates of the cities
         weights (list of float)           : weights of each cities
         n_sat   (int)                     : number of satellites
+        dim (int in {2, 3})               : eulerian problem or spherical problem
         """
         self.cities  = cities
         self.weights = weights
         self.n_sat   = n_sat
+        self.dim     = dim
+        if dim == 2   : self.max_dist = (R-r)/np.cos(beta)
+        elif dim == 3 : self.max_dist = R*np.cos(beta) - np.sqrt(r**2 - R**2 * np.sin(beta)**2)  # maximal distance at which a satellite has an impact
     
     def city_profit(self, sat, i) :
         local_profit = 0
         for j in range (self.n_sat) :
             Rij = np.linalg.norm(sat[j] - self.cities[i])
-            if (Rij <= max_dist) :
+            if (Rij <= self.max_dist) :
                 local_profit += Pt/(2*np.pi*Rij**2*(1-np.cos(beta)))
         return local_profit
-    
-    def profit(self, phi, theta) :
+
+    def profit(self, x, y) :
         """
         Compute the profit of a given position of the satellites
 
@@ -41,7 +44,8 @@ class Satellites_problem :
         a float representing the score of this position of satellites
         """
         profit = 0
-        cartesian = spher2cart(R, phi, theta)
+        if self.dim == 2 : cartesian = (x, y, R-r)
+        if self.dim == 3 : cartesian = spher2cart(R, x, y)
         for i in range (len(self.cities)) :
             local_profit = self.city_profit(cartesian, i)
             profit += np.minimum(local_profit, I_min * self.weights[i])
