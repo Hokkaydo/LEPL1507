@@ -50,12 +50,12 @@ def plot_countries(fig, file):
                 x, y, z = plot_polygon(poly)
                 fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
-def draw_circle_on_sphere(p:float, a:float, radius:float):
+def draw_circle_on_sphere(a:float, p:float, radius:float):
     '''
         Parametric equation determined by the radius and angular positions (both polar and azimuthal relative to the z-axis) of the circle on the spherical surface
         Parameters:
-            p (float): polar angle
-            a (float): azimuthal angle
+            a (float): polar angle
+            p (float): azimuthal angle
             radius (float): radius of the circle
             
         Returns:
@@ -88,9 +88,9 @@ def spherical_coords(lons, lats):
     for lat, lon in zip(lats, lons):
         lat_rad = math.radians(lat)
         lon_rad = math.radians(lon)
-        x = math.cos(lon_rad) * math.cos(lat_rad)*6318.134
-        y = math.cos(lon_rad) * math.sin(lat_rad)*6318.134
-        z = math.sin(lon_rad)*6318.134
+        x = math.sin(lon_rad) * math.cos(lat_rad)*6318.134
+        y = math.sin(lon_rad) * math.sin(lat_rad)*6318.134
+        z = math.cos(lon_rad)*6318.134
         x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
     return x_coords, y_coords, z_coords
 
@@ -104,7 +104,7 @@ def plot_cities(lons, lats):
         Returns:
             None
     '''
-    x, y, z = spherical_coords(lats, lons)
+    x, y, z = spherical_coords(lons, lats)
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), showlegend=False ) )
     
 def plot_satellite(pol, azi, rad):
@@ -118,12 +118,14 @@ def plot_satellite(pol, azi, rad):
             None
     '''
     clor =f'rgb(0, 0, 230)'
+    
+    x = 6350 * np.sin(azi) * np.cos(pol)
+    y = 6350 * np.sin(azi) * np.sin(pol)
+    z = 6350 * np.cos(azi)
+    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
+    
     for p, a in zip(pol, azi):
-        x1 = np.array([6350 * math.sin(p) * math.cos(a)])
-        y1 = np.array([6350 * math.sin(p) * math.sin(a)])
-        z1 = np.array([6350 * math.cos(p)])
         x, y, z = draw_circle_on_sphere(p, a, rad)
-        fig.add_trace(go.Scatter3d(x=x1, y=y1, z=z1, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig():
