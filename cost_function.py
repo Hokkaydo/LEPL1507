@@ -44,7 +44,7 @@ class Satellites_problem :
         a float representing the score of this position of satellites
         """
         profit = 0
-        if self.dim == 2 : cartesian = (x, y, R-r)
+        if self.dim == 2 : cartesian = np.transpose([x, y, (R-r)*np.ones(len(x))])
         if self.dim == 3 : cartesian = spher2cart(R, x, y)
         for i in range (len(self.cities)) :
             local_profit = self.city_profit(cartesian, i)

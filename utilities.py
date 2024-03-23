@@ -33,3 +33,14 @@ def cart2spher(x, y, z) :
     else : phi = np.arctan(y/x) + np.pi * (x < 0)
     theta = np.arccos(z/r)
     return r, phi, theta
+
+if __name__ == '__main__' :
+    assert cart2spher(0, 0, 4)  == (4, np.pi/2, 0)
+    assert cart2spher(4, 0, 0)  == (4, 0, np.pi/2)
+    assert cart2spher(0, 4, 0)  == (4, np.pi/2, np.pi/2)
+    assert cart2spher(0, -4, 0) == (4, 3*np.pi/2, np.pi/2)
+    assert cart2spher(-4, 0, 0) == (4, np.pi, np.pi/2)
+    assert cart2spher(0, 0, -4) == (4, np.pi/2, np.pi)
+
+    assert spher2cart(3, 0, 0) == (0, 0, 3)
+    assert np.linalg.norm(np.array(spher2cart(3, np.pi/2, np.pi/2)) - np.array((0, 3, 0))) < 1e-15
