@@ -1,7 +1,7 @@
 import numpy as np
 import random as rnd
 
-def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_iter=15):
+def spherical_kmeans(cities_coordinates, cities_weights, N_satellites=2, max_iter=15):
 
     cities_coordinates = cities_coordinates/np.tile(np.linalg.norm(cities_coordinates, axis=1), (3, 1)).T
     
@@ -15,13 +15,10 @@ def spherical_kmeans(cities_coordinates, cities_weigths, N_satellites=2, max_ite
         old_centroids = centroids
         y = np.argmin(centroids@cities_coordinates.T, axis=0)
         for k in range(N_satellites):
-            Xk = cities_coordinates[[y[i] == k for i in range(n)]]
-            s = np.sum(Xk, axis=0)
-
-            norm = np.linalg.norm(s)
-            if len(Xk) == 0:
+            indexes = [y[i] == k for i in range(n)]
+            if True not in indexes:
                 centroids[k] = cities_coordinates[rnd.randrange(n)]
                 continue
-            centroids[k] = s/norm
+            centroids[k] = np.average(cities_coordinates[indexes], axis=0, weights=cities_weights[indexes])
         iteration+=1
     return centroids
