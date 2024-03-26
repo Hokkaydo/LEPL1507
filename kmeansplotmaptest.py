@@ -5,7 +5,7 @@ from utilities import *
 import plotly.graph_objects as go
 from plotly.offline import plot
 
-n_cities = 500
+n_cities = 100
 n_sat = 10
 
 r = 6371
@@ -33,7 +33,7 @@ satellites_lat, satellites_long = spherical_to_lat_long(satellites_polar)
 cities_lat, cities_long = spherical_to_lat_long(cities_polar)
 
 plot_map.create_fig()
-plot_map.plot_cities(cities_long, cities_lat)
+plot_map.plot_cities(cities_long, cities_lat, cities_weights)
 #print("sat polar\n", satellites_polar)
 #print("sat cart\n", satellites_cart)
 #print("cities polar\n", cities_polar)
@@ -58,5 +58,5 @@ t.update_layout(
 plot(t)
 
 import time
-time.sleep(10)
+#time.sleep(10)
 plot_map.plot_fig()

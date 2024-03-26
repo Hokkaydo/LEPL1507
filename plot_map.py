@@ -94,7 +94,7 @@ def spherical_coords(lons, lats):
         x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
     return x_coords, y_coords, z_coords
 
-def plot_cities(lons, lats):
+def plot_cities(lons, lats, weights):
     '''
         Place the cities on the spherical surface
                 
@@ -105,7 +105,7 @@ def plot_cities(lons, lats):
             None
     '''
     x, y, z = spherical_coords(lons, lats)
-    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), showlegend=False ) )
+    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), marker=dict(size=weights/np.max(weights)*25), showlegend=False ) )
     
 def plot_satellite(pol, azi, rad):
     '''
