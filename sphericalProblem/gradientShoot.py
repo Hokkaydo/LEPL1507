@@ -52,7 +52,7 @@ def gradient_descent_satellites_repartition(problem, eps, max_iter, verbose = Fa
                 break
             grad /= np.linalg.norm(grad)
             alpha = optimal_alpha(i, grad, eps)
-            problem.satellites_position[i] += alpha * grad/np.linalg.norm(grad)
+            problem.satellites_position[i] += alpha * grad
             n_iter += 1
         if verbose:
             print("End position of the satellite: {}, total received power: {}, number of iterations: {}\n".format(problem.satellites_position[i], problem.total_received_power(continuous = True), n_iter))
