@@ -12,7 +12,7 @@ def gradient_descent_satellites_repartition(problem, eps, max_iter, verbose = Fa
             grad[i] = (power_plus_h - power_minus_h) / (2*h)
             problem.satellites_position[index] = old_position
         return grad
-    
+
     def first_derivative(index, alpha, h, grad):
             old_position = np.copy(problem.satellites_position[index])
             problem.satellites_position[index] += (alpha + h)* grad
@@ -21,7 +21,7 @@ def gradient_descent_satellites_repartition(problem, eps, max_iter, verbose = Fa
             power_minus_h = problem.total_received_power(continuous = True)
             problem.satellites_position[index] = old_position
             return (power_plus_h - power_minus_h) / (2*h)
-    
+
     def optimal_alpha(index, grad, eps):
         sign = np.sign(first_derivative(index, 0, 1e-6, grad))
         alpha_a = 0
@@ -43,18 +43,18 @@ def gradient_descent_satellites_repartition(problem, eps, max_iter, verbose = Fa
         return alpha
 
     for i in range(len(problem.satellites_position)):
-        n_iter = 0
         if verbose:
-            print("Initial position of the satellite: {}, total received power: {}".format(problem.satellites_position[i], problem.total_received_power(continuous = True)))
-        while True:
+            print(f"Initial position of the satellite: {problem.satellites_position[i]}, total received power: {problem.total_received_power(continuous=True)}")
+        n_iter = 0
+        while (n_iter < max_iter) :
             grad = approx_grad(i, h=1e-6)
-            if np.linalg.norm(grad) < eps or n_iter >= max_iter:
-                break
+            if np.linalg.norm(grad) < eps: break
             grad /= np.linalg.norm(grad)
             alpha = optimal_alpha(i, grad, eps)
+            print(grad)
+            print(alpha)
             problem.satellites_position[i] += alpha * grad
             n_iter += 1
         if verbose:
-            print("End position of the satellite: {}, total received power: {}, number of iterations: {}\n".format(problem.satellites_position[i], problem.total_received_power(continuous = True), n_iter))
+            print(f"End position of the satellite: {problem.satellites_position[i]}, total received power: {problem.total_received_power(continuous = True)}, number of iterations: {n_iter}\n")
     problem.method = "gradient descent"
-    return problem

@@ -25,4 +25,3 @@ def spherical_kmeans_satellites_repartition(problem, max_iter=300):
         iteration+=1
     problem.satellites_position = centroids
     problem.method = "kmeans"
-    return problem

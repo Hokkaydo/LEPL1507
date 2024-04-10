@@ -1,115 +1,41 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
-Pt = 50                                                             # Transmission power of a satellite []
-beta = np.deg2rad(5)                                                # angle of covering of a satellite [rad]
-r = 6371                                                            # mean radius of Earth [km]
-R = r + 35786                                                       # geostationary radius [km]
-I_min = (10**((-67-30)/10))*1e4                                     # Intensity required to satisfy perfectly 10 000 residents
+from kmeans import *
+from optimization import *
+from satellites_problem import *
 
-h = 1e-6 # for finite differences
-
-X = np.array([100, 150, 300, 300, 700, 750, 800, 800, 800, 950, 1000, 1200, 1400, 1413, 1500])*10
-Y = np.array([30, 450, 200, 300, 50, 50, 400, 250, 300, 10, 420, 350, 270, 200, 430])*10
-cities = np.transpose([X, Y])
-weights = np.ones(15)
-n_sat   = 2
-# maximal distance at which a satellite has an impact
-max_dist = (R-r)/np.cos(beta)
-
-def profit(X) :
+def euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, verbose=False) :
     """
+    Cette fonction trouve les positions de N_satellites satellites de façon à couvrir le mieux possible les villes indiquées pour une terre rectangulaire.
+
     Input :
-    X is a numpy array of floats of size 2*n_sat containing the cartesian coordinates of all satellites
-
-    Example :
-    X = [x_sat1, y_sat1, x_sat2, y_sat2, ...]
+    Obligatoire :
+        N_satellites       (int)                       : nombre de satellites fournis.
+        cities_coordinates (list(tuple(float, float))) : liste contenant les coordonnées cartésiennes x,y (en km) des villes sur la terre. La position (0,0) correspond au coin inférieur gauche de la terre.
+        cities_weights     (list(float))               : liste de même taille que cities_coordinates contenant les poids des villes.
+    Optionnel :
+        H           (float) : hauteur des satellites par rapport à la terre (en km). Par défaut, la hauteur géostationnaire de 35 786 km a été choisie.
+        P           (float) : puissance de l'onde qu'un satellite peut émettre (en W). Par défaut, une valeur de 50 a été choisie.
+        I_necessary (float) : intensité nécessaire pour satisfaire entièrement une ville ayant un poids de 1 (en W). Par défaut, une valeur de 2e-6 a été choisie. Cela correspond à une intensité de -67dBm pour 10000 appareils.
+        alpha       (float) : angle de focalisation de l'onde émise par le satellite en radian. Sa valeur doit être comprise entre 0 et pi. Par défaut, l'onde est supposée non focalisée et une valeur de pi est prise.
+        verbose     (bool)  : booléen indiquant si les détails de l'optimisation doivent être imprimés dans la sortie standard
+    
+    Return :
+        satellites_coordinates (list(tuple(float, float))) : liste contenant les coordonnées cartésiennes x,y (en km) des satellites sur la terre après optimisation.
+        cost                   (float)                     : valeur de la fonction objectif avec cette répartition des satellites.
     """
-    x = [] ; y = []
-    for i in range (n_sat) :
-        x.append(X[2*i]) ; y.append(X[2*i+1])
-    x = np.array(x) ; y = np.array(y)
 
-    profit = 0
-    for i in range (len(cities)) :
-        local_profit = 0
-        for j in range (n_sat) :
-            Rij = np.sqrt((x[j] - cities[i][0])**2 + (y[j] - cities[i][1])**2 + (R-r)**2)
-            if (Rij <= max_dist) :
-                local_profit += Pt/(2*np.pi*Rij**2*(1-np.cos(beta)))
-        profit += np.minimum(local_profit, I_min * weights[i])
-    return -profit
-
-def grad(X) :
-    """
-    Input :
-    X is a numpy array of floats of size 2*n_sat containing the cartesian coordinates of all satellites
-
-    Example :
-    X = [x_sat1, y_sat1, x_sat2, y_sat2, ...]
-    """
-    x = [] ; y = []
-    for i in range (n_sat) :
-        x.append(X[2*i]) ; y.append(X[2*i+1])
-    x = np.array(x) ; y = np.array(y)
-
-    gradient = np.zeros(2 * n_sat)
-    for i in range (len(cities)) :
-        local_profit = 0
-        for j in range (n_sat) :
-            Rij = np.sqrt((x[j] - cities[i][0])**2 + (y[j] - cities[i][1])**2 + (R-r)**2)
-            if (Rij <= max_dist) :
-                local_profit += Pt/(2*np.pi*Rij**2*(1-np.cos(beta)))
-
-        if (local_profit < I_min * weights[i]) :
-            for j in range (2*n_sat) :
-                gradient[j] += (profit(X + h*np.identity(len(X))[j,:]) - profit(X - h*np.identity(len(X))[j,:])) / (2*h)
-    return gradient
-
-def pas(X, gradient, c1 = 0.0001, c2 = 0.9, alpha = 1) :
-    L = 0 ; U = np.inf
-    cost = profit(X)
-    while True :
-        print(alpha)
-        new_cost = profit(X - alpha*gradient)
-        if new_cost > cost + c1*alpha*np.dot(gradient, -gradient) :
-            U = alpha
-            alpha = (L + U)/2
-        elif np.dot(grad(X - alpha*gradient), -gradient) < c2 * np.dot(gradient, -gradient)  :#new_cost < cost + c2*alpha*np.dot(gradient, -gradient) :
-            L = alpha
-            if U == np.inf : alpha = 2*L
-            else : alpha = (L+U)/2
-        else : return alpha
-
-def line_research(X, arret = 1e-5) :
-    alpha = 1
-    while True :
-        gradient = grad(X)
-        print(gradient)
-        alpha = pas(X, gradient, alpha)
-        print(alpha)
-        X2 = X - alpha * gradient
-        if np.linalg.norm(X - X2) < arret : break
-        X = X2
-        print(f"Current cost : {-profit(X)}")
-    return X
+    problem = SatellitesProblem(2, N_satellites, cities_coordinates, cities_weights, H=H, P=P, I_necessary=I_necessary, alpha=alpha)
+    kmeans = Kmeans(problem)
+    kmeans.solve(verbose=verbose)
+    optimization = Optimization(problem)
+    optimization.solve(verbose=verbose)
+    return problem.sat_coordinates, problem.cost
 
 if __name__ == '__main__' :
-    satellites = np.array([[1500, 4501],[500, 500]])
+    N_satellites = 15
+    N_cities = 30
+    cities_coordinates = np.vstack((np.random.uniform(0, 2000, N_cities), np.random.uniform(0, 1000, N_cities))).T
+    cities_weights = np.random.uniform(0, 1, N_cities)
 
-    plt.figure()
-    plt.scatter(cities[:, 0], cities[:, 1], color='b', label='Villes')
-    plt.scatter(satellites[:,0], satellites[:,1], color='g', label='Satellites initiaux')
-    plt.show()
-
-    satellites = np.reshape(satellites, 2*n_sat)
-    print(f"Initial cost : {-profit(satellites)}")
-
-    satellites = line_research(satellites)
-    print(f"Cost after optimization : {-profit(satellites)}")
-    satellites = np.reshape(satellites, (n_sat, 2))
-    print(f"Positions of the satellites : {satellites}")
-    plt.figure()
-    plt.scatter(cities[:, 0], cities[:, 1], color='b')
-    plt.scatter(satellites[:, 0], satellites[:, 1], color='r')
-    plt.show()
+    sat_coordinates, cost = euclidean_satellites_repartition(N_satellites, cities_coordinates, cities_weights, verbose=True)
