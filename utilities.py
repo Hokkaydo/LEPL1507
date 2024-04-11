@@ -11,15 +11,30 @@ def cart2spher(X) :
     x, y, z = X
     r = (x**2 + y**2 + z**2)**0.5
         
-    if z > 0: theta = np.arctan((x**2 + y**2)**0.5 / z)
-    elif z < 0: theta = np.pi + np.arctan((x**2 + y**2)**0.5 / z)
-    else: theta = np.pi / 2
+    theta = []
     
-    if x > 0: phi = np.arctan(y / x)
-    elif x < 0 and y >= 0: phi = np.pi + np.arctan(y / x)
-    elif x < 0 and y < 0: phi = -np.pi + np.arctan(y / x)
-    elif x == 0 and y > 0: phi = np.pi / 2
-    elif x == 0 and y < 0: phi = -np.pi / 2
-    else: phi = 0
+    for i in range(len(r)):
+        if z[i] > 0: theta.append(np.arctan((x[i]**2 + y[i]**2)**0.5 / z[i]))
+        elif z[i] < 0: theta.append(np.pi + np.arctan((x[i]**2 + y[i]**2)**0.5 / z[i]))
+        else: theta.append(np.pi / 2)
+    theta = np.array(theta)
     
-    return (r, phi, theta)
+    phi = []
+    
+    for i in range(len(r)):
+        if x[i] > 0: phi.append(np.arctan(y[i] / x[i]))
+        elif x[i] < 0 and y[i] >= 0: phi.append(np.pi + np.arctan(y[i] / x[i]))
+        elif x[i] < 0 and y[i] < 0: phi.append(-np.pi + np.arctan(y[i] / x[i]))
+        elif x[i] == 0 and y[i] > 0: phi.append(np.pi / 2)
+        elif x[i] == 0 and y[i] < 0: phi.append(-np.pi / 2)
+        else: phi.append(0)
+    phi = np.array(phi)    
+    return np.array((r, phi, theta))
+
+def spherical_to_lat_long(data):
+    print(data, "to spherical", data * 180/np.pi)
+    return data * 180/np.pi
+
+def lat_long_to_spherical(data):
+    print(data, "to long/lat", data/180*np.pi)
+    return data/180 * np.pi

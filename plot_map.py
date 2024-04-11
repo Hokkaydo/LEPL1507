@@ -106,7 +106,19 @@ def plot_cities(lons, lats, weights):
     '''
     x, y, z = spherical_coords(lons, lats)
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), marker=dict(size=weights/np.max(weights)*25), showlegend=False ) )
-    
+
+def plot_satellite_long_lat(long, lat):
+    '''
+        Place the satellite on the spherical surface
+        
+            long (list of floats): longitude of the satellite
+            lat (list of floats): latitude of the satellite
+            
+        Returns:
+            None
+    '''
+    x, y, z = spherical_coords(long, lat)
+    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
 def plot_satellite(pol, azi, rad):
     '''
         Place the satellite on the spherical surface
@@ -119,21 +131,21 @@ def plot_satellite(pol, azi, rad):
     '''
     clor =f'rgb(0, 0, 230)'
     
-    x = 6350 * np.sin(azi) * np.cos(pol)
-    y = 6350 * np.sin(azi) * np.sin(pol)
-    z = 6350 * np.cos(azi)
+    x = 6371 * np.sin(azi) * np.cos(pol)
+    y = 6371 * np.sin(azi) * np.sin(pol)
+    z = 6371 * np.cos(azi)
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
     
     for p, a in zip(pol, azi):
         x, y, z = draw_circle_on_sphere(p, a, rad)
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
-def plot_fig():
+def plot_fig(filename="temp-plot.html", auto_open=True):
     # Read the shapefile.  Creates a DataFrame object
     gdf = gpd.read_file("ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
     plot_sphere(fig)
     plot_countries(fig, gdf)
-    plot(fig)
+    plot(fig, filename=filename, auto_open=auto_open)
     
 def create_fig():
     global fig 
