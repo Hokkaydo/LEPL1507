@@ -18,11 +18,13 @@ class SatellitesProblem :
         alpha              (float)                     : angle de focalisation de l'onde émise par le satellite en radian. Sa valeur doit être comprise entre 0 et pi. Par défaut, l'onde est supposée non focalisée et une valeur de pi est prise.
         sat_coordinates    (list(tuple(float, float))) : liste contenant les coordonnées des satellites sur la terre. Si dimension == 2, des coordonnées cartésiennes x,y (en km) sont attendues. Si dimension == 3, les coordonnées sphériques 0 <= phi <= 2pi et 0 <= theta <= pi (en radian) sont attendues. Initialement, les satellites sont tous placés en (0,0).
         value              (float)                     : valeur de la fonction objectif avec cette répartition des satellites.
+        forbidden_cities   (liste(tuple(float, float))): liste contenant les coordonnées des villes interdites sur la terre (initialisée par défaut comme une liste vide).
+        penality           (int)                       : valeur de pénalité rajouté aux couts lorsqu'on a une ville interdite
     
     Méthodes ;
     """
 
-    def __init__(self, dimension, N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi) :
+    def __init__(self, dimension, N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, forbidden_cities=[], penalty=1000) :
         self.dimension = dimension
         self.N_satellites = N_satellites
         self.cities_coordinates =  cities_coordinates
@@ -39,6 +41,8 @@ class SatellitesProblem :
 
         self.sat_coordinates = np.zeros((N_satellites, 2))
         self.value = self.cost()
+        self.forbidden_cities = forbidden_cities
+        self.penalty = penalty ### ATTENTION DEFINIR UNE VALEUR ###
     
     def __distance(self, index_city, index_sat) :
         if   self.dimension == 2 :
@@ -64,7 +68,17 @@ class SatellitesProblem :
     def cost(self, continuous = False) :
         total_received = 0
         for i in range (len(self.cities_coordinates)) :
-            total_received += self.__cost_city(i, continuous=continuous)
+            city_coordinate_tuple = tuple(self.cities_coordinates[i])
+            if city_coordinate_tuple in self.forbidden_cities:
+                forbidden_city_reached = False
+                for k in range(self.N_satellites):
+                    if np.linalg.norm(np.array(city_coordinate_tuple) - self.sat_coordinates[k]) < threshold:
+                        forbidden_city_reached = True
+                        break
+                if forbidden_city_reached:
+                    total_received -= self.penalty_factor
+            else:
+                total_received += self.__cost_city(i, continuous=continuous)
         if not continuous : self.value = total_received
         return total_received
     
