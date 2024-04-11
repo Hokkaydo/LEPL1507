@@ -4,8 +4,9 @@ import numpy as np
 from utilities import *
 import plotly.graph_objects as go
 from plotly.offline import plot
+import scipy.optimize as opt
 
-n_cities = 100
+n_cities = 500
 n_sat = 10
 
 r = 6371
@@ -22,6 +23,20 @@ cities_weights = np.random.randint(1, 100, n_cities)
 
 # shape (n, 3)
 satellites_cart = spherical_kmeans(cities, cities_weights, n_sat)*r
+
+def cost(current):
+    treshold = 50
+    cost = 0
+    for k in range(len(cities)):
+        y = np.argmin(np.array(cities[k]).T@current)
+        dist = np.linalg.norm(y - cities[k])
+        if dist > treshold:
+            cost += 1000 * cities_weights[k] 
+        cost += dist * cities_weights[k]
+    return cost
+
+#satellites_cart = opt.fmin(cost, satellites_cart)
+
 
 def spherical_to_lat_long(data):
     return 180/np.pi * data
