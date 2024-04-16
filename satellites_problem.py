@@ -41,8 +41,8 @@ class SatellitesProblem :
         elif dimension == 3 : self.max_distance = (H+R)*np.cos(alpha) - np.sqrt(R**2 - ((H+R)*np.sin(alpha))**2)
 
         self.sat_coordinates = np.zeros((N_satellites, 2))
-        self.value = self.cost()
         self.forbidden_cities = forbidden_cities
+        self.value = self.cost()
         self.penalty = penalty ### ATTENTION DEFINIR UNE VALEUR ###
     
     def __distance(self, index_city, index_sat) :
