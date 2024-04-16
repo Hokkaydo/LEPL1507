@@ -22,13 +22,13 @@ class Kmeans :
     def __kmeans3D(self) :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
         threshold = 1.0  # Définir la valeur de seuil = distance entre un kluster interdit et un centroid
-        
-        cities_coordinates = spher2cart(self.problem.cities_coordinates)
+        print(self.problem.cities_coordinates.shape, "shape cities kmeans")
+        cities_coordinates = spher2cart(np.c_[np.ones(len(self.problem.cities_coordinates))*self.problem.R, self.problem.cities_coordinates])
         for i in range(len(cities_coordinates)):
             cities_coordinates[i] /= np.linalg.norm(cities_coordinates[i])
         
         n = len(cities_coordinates)
-        centroids = np.zeros((self.problem.N_satellites, 2))
+        centroids = np.zeros((self.problem.N_satellites, 3))
         for i in range(self.problem.N_satellites):
             centroids[i] = cities_coordinates[np.random.randint(n)]
         
@@ -61,7 +61,7 @@ class Kmeans :
                     continue
                 centroids[k] = s/norm
             iteration+=1
-        self.problem.sat_coordinates = cart2spher(centroids*(self.problem.R + self.problem.H))
+        self.problem.sat_coordinates = cart2spher(centroids*(self.problem.R + self.problem.H))[:, 1:]
         return iteration
     
     def solve(self, verbose = False) :

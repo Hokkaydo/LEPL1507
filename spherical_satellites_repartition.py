@@ -27,15 +27,14 @@ def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_w
         satellites_coordinates (nparray(nparray(float, float))) : liste contenant les coordonnées des satellites sur la terre après optimisation sous le même format que celui avec lequel les coordonnées des villes avaient été fournies.
         cost                   (float)                          : coût de la fonction objectif avec cette répartition des satellites.
     """
-    if format == "cartesian" : cities_coordinates = [cart2spher(cities_coordinates[i])[1:] for i in range(len(cities_coordinates))]
+    if format == "cartesian" : cities_coordinates = np.array([cart2spher(cities_coordinates[i])[1:] for i in range(len(cities_coordinates))])
     problem = SatellitesProblem(3, N_satellites, cities_coordinates, cities_weights, R=R, H=H, P=P, I_necessary=I_necessary, alpha=alpha)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
     print(problem.sat_coordinates)
     optimization = Optimization(problem)
     optimization.solve(verbose=verbose)
-    print(problem.sat_coordinates)
-    return problem.sat_coordinates, problem.cost
+    return np.array([np.ones(N_satellites)*(R+H), *problem.sat_coordinates]), problem.cost
 
 if __name__ == '__main__' :
     N_satellites = 15

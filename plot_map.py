@@ -2,9 +2,10 @@
 import geopandas as gpd
 import numpy as np
 from math import asin
-import math
+
 import plotly.graph_objects as go
 from plotly.offline import plot
+from utilities import *
 
 def plot_sphere(fig):
     """plot sphere"""
@@ -18,44 +19,36 @@ def plot_sphere(fig):
     fig.add_surface(x=x, y=y, z=z, colorscale=[[0, col], [1, col]], showscale = False, opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1))
        
 
-def plot_polygon(poly):
-    
-    xy_coords = poly.exterior.coords.xy
-    lon = np.array(xy_coords[0])
-    lat = np.array(xy_coords[1])
-    
-    lon = lon * np.pi/180
-    lat = lat * np.pi/180
-    
-    R = 6268.134
-    x = R * np.cos(lat) * np.cos(lon)
-    y = R * np.cos(lat) * np.sin(lon)
-    z = R * np.sin(lat)
-    
-    return x, y, z
-
 def plot_countries(fig, file):
-    for i in file.index :
-        # print(gdf.loc[i].NAME)            # Call a specific attribute
+    """
+    Draw countries on map
     
+    Args:
+        fig:  The fig to draw on
+        file: Countries coordinates
+    """
+    # For each country
+    for i in file.index :
+        
+        
         polys = file.loc[i].geometry         # Polygons or MultiPolygons
     
         if polys.geom_type == 'Polygon':
-            x, y, z = plot_polygon(polys)
+            x, y, z = gps2cart(poly.exterior.coords.xy)
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
         
         elif polys.geom_type == 'MultiPolygon':
         
             for poly in polys.geoms:
-                x, y, z = plot_polygon(poly)
+                x, y, z = gps2cart(poly.exterior.coords.xy)
                 fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
-def draw_circle_on_sphere(a:float, p:float, radius:float):
+def draw_circle_on_sphere(phi:float, theta:float, radius:float):
     '''
-        Parametric equation determined by the radius and angular positions (both polar and azimuthal relative to the z-axis) of the circle on the spherical surface
+        Parametric equation determined by the radius and angular positions (both phi and and relative to the z-axis) of the circle on the spherical surface
         Parameters:
-            a (float): polar angle
-            p (float): azimuthal angle
+            phi (float): polar angle
+            theta (float): azimuthal angle
             radius (float): radius of the circle
             
         Returns:
@@ -65,79 +58,38 @@ def draw_circle_on_sphere(a:float, p:float, radius:float):
     for i in range(6, 600):
         v = asin(radius/(i*1000))
         u = np.mgrid[0:2*np.pi:30j]
-        x1 = (np.sin(v)*np.cos(p)*np.cos(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.cos(a) - np.sin(v)*np.sin(a)*np.sin(u))*(6428.134)
-        y1 = (np.sin(v)*np.cos(p)*np.sin(a)*np.cos(u) + np.cos(v)*np.sin(p)*np.sin(a) + np.sin(v)*np.cos(a)*np.sin(u))*6428.134
-        z1 = -np.sin(v)*np.sin(p)*np.cos(u)*6428.134 + np.cos(v)*np.cos(p)*6428.134
+        x1 = (np.sin(v)*np.cos(theta)*np.cos(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.cos(phi) - np.sin(v)*np.sin(phi)*np.sin(u))*(6428.134)
+        y1 = (np.sin(v)*np.cos(theta)*np.sin(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.sin(phi) + np.sin(v)*np.cos(phi)*np.sin(u))*6428.134
+        z1 = -np.sin(v)*np.sin(theta)*np.cos(u)*6428.134 + np.cos(v)*np.cos(theta)*6428.134
         x.append(x1) ; y.append(y1) ; z.append(z1)
         
     return x, y, z
     
-
-def spherical_coords(lons, lats):
-    '''
-        Convert the latitude and longitude of the cities to the spherical coordinates
-            
-        Parameters:
-            lon (list of floats): longitude of the cities
-            lats (list of floats): latitude of the cities
-                
-         Returns:
-             x, y, z (list of floats): spherical coordinates of the cities
-    '''
-    x_coords = []; y_coords = []; z_coords = []
-    for lat, lon in zip(lats, lons):
-        lat_rad = math.radians(lat)
-        lon_rad = math.radians(lon)
-        x = math.cos(lon_rad) * math.cos(lat_rad)*6318.134
-        y = math.sin(lon_rad) * math.cos(lat_rad)*6318.134
-        z = math.sin(lat_rad) * 6318.134
-        x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
-    return x_coords, y_coords, z_coords
-
-def plot_cities(lons, lats, weights):
+def plot_cities(cites_spherical, weights):
     '''
         Place the cities on the spherical surface
-                
-            lons (list of floats): longitude of the cities
-            lats (list of floats): latitude of the cities
-            
-        Returns:
-            None
+        Args:
+            cities_gps: ndarray((n, 3)) containing radius, phi and theta                 
     '''
-    x, y, z = spherical_coords(lons, lats)
+    x, y, z = spher2cart(cites_spherical).T
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), marker=dict(size=weights/np.max(weights)*25), showlegend=False ) )
 
-def plot_satellite_long_lat(long, lat):
+def plot_satellite(satellites_spherical, rad):
     '''
         Place the satellite on the spherical surface
         
-            long (list of floats): longitude of the satellite
-            lat (list of floats): latitude of the satellite
-            
-        Returns:
-            None
-    '''
-    x, y, z = spherical_coords(long, lat)
-    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
-def plot_satellite(pol, azi, rad):
-    '''
-        Place the satellite on the spherical surface
-        
-            pol (list of floats): polar angles of the satellite
-            a (list of floats): azimuthal angles of the satellite
+        Args:
+            satellites_spherical: ndarray((n, 3)) containing radius, phi and theta
             radius (float): radius of the surface coverd by the satellite
-        Returns:
-            None
     '''
     clor =f'rgb(0, 0, 230)'
     
-    x = 6371 * np.sin(azi) * np.cos(pol)
-    y = 6371 * np.sin(azi) * np.sin(pol)
-    z = 6371 * np.cos(azi)
+    x, y, z = spher2cart(satellites_spherical).T
+
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
     
-    for p, a in zip(pol, azi):
-        x, y, z = draw_circle_on_sphere(p, a, rad)
+    for phi, theta in satellites_spherical[1:]:
+        x, y, z = draw_circle_on_sphere(phi, theta, rad)
         fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig(filename="temp-plot.html", auto_open=True):
@@ -175,9 +127,9 @@ def test():
     plot_cities(lonss, latss, 1)
     
 #affiche un exemple de villes et de satellites
-create_fig()
-test()
-plot_fig()
+#create_fig()
+#test()
+#plot_fig()
 
 #fig.write_html("3d_plot.html")
 

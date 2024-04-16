@@ -8,6 +8,7 @@ def spher2cart(X) :
     Returns:
         ndarray((n, 3)) containing x, y and z coordinates 
     """
+    print(X.shape)
     r, phi, theta = X.T
     x = r * np.sin(theta) * np.cos(phi)
     y = r * np.sin(theta) * np.sin(phi)
@@ -67,17 +68,25 @@ def cart2spher(X):
 def spher2gps(data):
     """
     Args:
-        ndarray((n, 3)) containing radius, phi and theta coordinates 
+        ndarray((n, 3)) containing phi and theta coordinates 
     Returns:
-        ndarray((n, 2)) containing longitudes and latitude coordinates
+        ndarray((n, 3)) containing longitudes and latitude coordinates
     """
-    return np.array([np.pi - data.T[0], np.pi/2 - data.T[1]]) * 180/np.pi
+    return np.array([
+        data.T[0],
+        data.T[1]*180/np.pi,
+        data.T[2]*180/np.pi
+    ]).T
 
 def gps2spher(data):
     """
     Args:
         ndarray((n, 2)) containing longitudes and latitude coordinates
     Returns:
-        ndarray((n, 3)) containing radius, phi and theta coordinates 
+        ndarray((n, 2)) containing phi and theta coordinates 
     """
-    return np.array([np.pi + data.T[0], np.pi/2 + data.T[1]]).T /180 * np.pi
+    return np.array([
+        data.T[0],
+        data.T[1]/180*np.pi,
+        data.T[2]/180*np.pi
+    ]).T
