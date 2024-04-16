@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def spher2cart(X) :
     r, phi, theta = X
@@ -6,6 +7,19 @@ def spher2cart(X) :
     y = r * np.sin(theta) * np.sin(phi)
     z = r * np.cos(theta)
     return (x, y, z)
+
+def gps2cart(X) :
+    r, longs, lats = X
+    x_coords = []; y_coords = []; z_coords = []
+    for lat, long in zip(lats, longs):
+        lat_rad = math.radians(lat)
+        lon_rad = math.radians(long)
+        x = math.sin(lon_rad) * math.cos(lat_rad)*r
+        y = math.sin(lon_rad) * math.sin(lat_rad)*r
+        z = math.cos(lon_rad)*r
+        x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
+    return x_coords, y_coords, z_coords
+
 
 def cart2spher(X) :
     x, y, z = X
