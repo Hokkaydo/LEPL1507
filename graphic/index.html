@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulation couverture satellitaire</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="index.css" rel="stylesheet"/> 
 </head>
 
 <body class="w-full h-full relative">
@@ -88,6 +88,7 @@
             console.log(cities)
             cities.push([long_input.value, lat_input.value])
             weights.push(w_input.value)
+            console.log("Adding w:" + w_input.value  + " ,long:" + long_input.value + ", lat:" + lat_input.value)
             update_cities()
         }
 
