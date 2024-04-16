@@ -67,6 +67,7 @@ class SatellitesProblem :
     
     def cost(self, continuous = False) :
         total_received = 0
+        threshold = 1
         for i in range (len(self.cities_coordinates)) :
             city_coordinate_tuple = tuple(self.cities_coordinates[i])
             if city_coordinate_tuple in self.forbidden_cities:
