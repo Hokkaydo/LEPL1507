@@ -88,9 +88,9 @@ def spherical_coords(lons, lats):
     for lat, lon in zip(lats, lons):
         lat_rad = math.radians(lat)
         lon_rad = math.radians(lon)
-        x = math.sin(lon_rad) * math.cos(lat_rad)*6318.134
-        y = math.sin(lon_rad) * math.sin(lat_rad)*6318.134
-        z = math.cos(lon_rad)*6318.134
+        x = math.cos(lon_rad) * math.cos(lat_rad)*6318.134
+        y = math.sin(lon_rad) * math.cos(lat_rad)*6318.134
+        z = math.sin(lat_rad) * 6318.134
         x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
     return x_coords, y_coords, z_coords
 
@@ -161,7 +161,7 @@ def create_fig():
 def test():
     pol = [np.pi/4, np.pi/3, np.pi/2]
     #vecteur azi pour plot_satellite
-    azi = [np.pi, np.pi/2, 0, 3*np.pi/2]
+    azi = [np.pi, np.pi/2, 3*np.pi/2]
     #radius pour plot_satellite
     rad = 4000
     plot_satellite(pol, azi, rad)
@@ -172,10 +172,12 @@ def test():
     lonss = [-74.0060, -118.2437, -87.6298, -95.3698, -112.0740,
             -0.1278, 2.3522, 13.4050, 37.6176, 116.4074,
             139.6917, 151.2093, -46.6333, -99.1332, 72.8777]
-    plot_cities(lonss, latss)
+    plot_cities(lonss, latss, 1)
     
 #affiche un exemple de villes et de satellites
-#test()
+create_fig()
+test()
+plot_fig()
 
 #fig.write_html("3d_plot.html")
 
