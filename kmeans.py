@@ -23,13 +23,14 @@ class Kmeans :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
         threshold = 1.0  # Définir la valeur de seuil = distance entre un kluster interdit et un centroid
         
-        for i in range(len(self.problem.cities_coordinates)):
-            self.problem.cities_coordinates[i] /= np.linalg.norm(self.problem.cities_coordinates[i])
+        cities_coordinates = spher2cart(self.problem.cities_coordinates)
+        for i in range(len(cities_coordinates)):
+            cities_coordinates[i] /= np.linalg.norm(cities_coordinates[i])
         
-        n = len(self.problem.cities_coordinates)
+        n = len(cities_coordinates)
         centroids = np.zeros((self.problem.N_satellites, 2))
         for i in range(self.problem.N_satellites):
-            centroids[i] = self.problem.cities_coordinates[np.random.randint(n)]
+            centroids[i] = cities_coordinates[np.random.randint(n)]
         
         # Vérifier si les positions des satellites générées sont trop proche des villes interdites
         for i in range(self.problem.N_satellites):
@@ -39,28 +40,28 @@ class Kmeans :
                     # Choisir une autre position aléatoire pour ce satellite
                     valid_position_found = False
                     while not valid_position_found:
-                        new_position = np.random.choice(self.problem.cities_coordinates)
+                        new_position = np.random.choice(cities_coordinates)
                         if tuple(new_position) not in self.problem.forbidden_cities:
                             centroids[i] = new_position
                             valid_position_found = True
-                        centroids[i] = self.problem.cities_coordinates[np.random.randint(n)]
+                        centroids[i] = cities_coordinates[np.random.randint(n)]
 
         old_centroids = None
         iteration = 0
         while old_centroids is None or iteration < self.max_iter:
             old_centroids = centroids
-            y = np.argmin(centroids@self.problem.cities_coordinates.T, axis=0)
+            y = np.argmin(centroids@cities_coordinates.T, axis=0)
             for k in range(self.problem.N_satellites):
-                Xk = self.problem.cities_coordinates[[y[i] == k for i in range(n)]]
+                Xk = cities_coordinates[[y[i] == k for i in range(n)]]
                 s = np.sum(Xk, axis=0)
-                
+
                 norm = np.linalg.norm(s)
                 if len(s) == 0 or norm == 0:
-                    centroids[k] = self.problem.cities_coordinates[np.random.randint(n)]
+                    centroids[k] = cities_coordinates[np.random.randint(n)]
                     continue
                 centroids[k] = s/norm
             iteration+=1
-        self.problem.sat_coordinates = centroids
+        self.problem.sat_coordinates = cart2spher(centroids*(self.problem.R + self.problem.H))
         return iteration
     
     def solve(self, verbose = False) :
