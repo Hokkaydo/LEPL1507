@@ -4,24 +4,25 @@ from utilities import *
 
 class SatellitesProblem :
     """
-    Classe pour représenter le problème de trouver la meilleur position possible de N_satellites satellites pour couvrir au mieux un ensemble de villes en Internet.
+    Classe pour représenter le problème de trouver la meilleure position possible de N_satellites satellites pour couvrir au mieux un ensemble de villes en Internet.
 
     Attributs :
-        dimension          (int)                       : valeur parmi {2, 3}. Représente la dimension du problème. Si dimension == 2, le problème est réalisé sur une terre rectangulaire. Si dimension == 3, il est réalisé sur une terre sphérique.
-        N_satellites       (int)                       : nombre de satellites fournis.
-        cities_coordinates (list(tuple(float, float))) : liste contenant les coordonnées des villes sur la terre. Si dimension == 2, des coordonnées cartésiennes x,y (en km) sont attendues. La position (0,0) correspond au coin inférieur gauche de la terre. Si dimension == 3, les coordonnées sphériques 0 <= phi <= 2pi et 0 <= theta <= pi (en radian) sont attendues.
-        cities_weights     (list(float))               : liste de même taille que cities_coordinates contenant les poids des villes.
-        R                  (float)                     : rayon de la terre (en km). Par défaut, le rayone de la planète Terre de 6371 km est utilisé. Cette variable ne sera utilisée que pour un problème sphérique.
-        H                  (float)                     : hauteur des satellites par rapport à la terre (en km). Par défaut, la hauteur géostationnaire de 35 786 km a été choisie.
-        P                  (float)                     : puissance de l'onde qu'un satellite peut émettre (en W). Par défaut, une valeur de 50 a été choisie.
-        I_necessary        (float)                     : intensité nécessaire pour satisfaire entièrement une ville ayant un poids de 1 (en W). Par défaut, une valeur de 2e-6 a été choisie. Cela correspond à une intensité de -67dBm pour 10000 appareils.
-        alpha              (float)                     : angle de focalisation de l'onde émise par le satellite en radian. Sa valeur doit être comprise entre 0 et pi. Par défaut, l'onde est supposée non focalisée et une valeur de pi est prise.
-        sat_coordinates    (list(tuple(float, float))) : liste contenant les coordonnées des satellites sur la terre. Si dimension == 2, des coordonnées cartésiennes x,y (en km) sont attendues. Si dimension == 3, les coordonnées sphériques 0 <= phi <= 2pi et 0 <= theta <= pi (en radian) sont attendues. Initialement, les satellites sont tous placés en (0,0).
-        value              (float)                     : valeur de la fonction objectif avec cette répartition des satellites.
-        forbidden_cities   (liste(tuple(float, float))): liste contenant les coordonnées des villes interdites sur la terre (initialisée par défaut comme une liste vide).
-        penality           (int)                       : valeur de pénalité rajouté aux couts lorsqu'on a une ville interdite
+        dimension          (int)                            : valeur parmi {2, 3}. Représente la dimension du problème. Si dimension == 2, le problème est réalisé sur une terre rectangulaire. Si dimension == 3, il est réalisé sur une terre sphérique.
+        N_satellites       (int)                            : nombre de satellites fournis.
+        cities_coordinates (nparray(nparray(float, float))) : liste contenant les coordonnées des villes sur la terre. Si dimension == 2, des coordonnées cartésiennes x,y (en km) sont attendues. La position (0,0) correspond au coin inférieur gauche de la terre. Si dimension == 3, les coordonnées sphériques 0 <= phi <= 2pi et 0 <= theta <= pi (en radian) sont attendues.
+        cities_weights     (nparray(float))                 : liste de même taille que cities_coordinates contenant les poids des villes.
+        R                  (float)                          : rayon de la terre (en km). Par défaut, le rayon de la planète Terre de 6371 km est utilisé. Cette variable ne sera utilisée que pour un problème sphérique.
+        H                  (float)                          : hauteur des satellites par rapport à la terre (en km). Par défaut, la hauteur géostationnaire de 35 786 km a été choisie.
+        P                  (float)                          : puissance de l'onde qu'un satellite peut émettre (en W). Par défaut, une valeur de 50 a été choisie.
+        I_necessary        (float)                          : intensité nécessaire pour satisfaire entièrement une ville ayant un poids de 1 (en W). Par défaut, une valeur de 2e-6 a été choisie. Cela correspond à une intensité de -67dBm pour 10000 appareils.
+        alpha              (float)                          : angle de focalisation de l'onde émise par le satellite en radian. Sa valeur doit être comprise entre 0 et pi. Par défaut, l'onde est supposée non focalisée et une valeur de pi est prise.
+        sat_coordinates    (nparray(tuple(float, float)))   : liste contenant les coordonnées des satellites sur la terre. Si dimension == 2, des coordonnées cartésiennes x,y (en km) sont attendues. Si dimension == 3, les coordonnées sphériques 0 <= phi <= 2pi et 0 <= theta <= pi (en radian) sont attendues. Initialement, les satellites sont tous placés en (0,0).
+        value              (float)                          : valeur de la fonction objectif avec cette répartition des satellites.
+        forbidden_cities   (nparray(nparray(float, float))) : liste contenant les coordonnées des villes interdites sur la terre (initialisée par défaut comme une liste vide).
+        penality           (int)                            : valeur de pénalité ajoutée aux couts lorsqu'on a une ville interdite
     
-    Méthodes ;
+    Méthodes  :
+
     """
 
     def __init__(self, dimension, N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, forbidden_cities=[], penalty=1000) :
