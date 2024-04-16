@@ -18,7 +18,7 @@ def spher2cart(X) :
 def gps2cart(X) :
     """
     Args: 
-        X: ndarray((n, 2)) containing longitude and latitude coordinates
+        X: ndarray((n, 3)) containing radius, longitude and latitude coordinates
     Returns
         ndarray((n, 3)) containing x, y and z coordinates
     """

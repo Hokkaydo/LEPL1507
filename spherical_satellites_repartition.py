@@ -34,7 +34,7 @@ def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_w
     print(problem.sat_coordinates)
     optimization = Optimization(problem)
     optimization.solve(verbose=verbose)
-    return np.array([np.ones(N_satellites)*(R+H), *problem.sat_coordinates]), problem.cost
+    return np.c_[np.ones(N_satellites)*(R+H), problem.sat_coordinates], problem.cost
 
 if __name__ == '__main__' :
     N_satellites = 15

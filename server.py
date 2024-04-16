@@ -29,7 +29,7 @@ def compute():
     cities_spherical = gps2spher(cities_gps)
     cities_weights = np.array(cities_weights).astype(np.float64)
     
-    satellites_spherical, cost = ssr.spherical_satellites_repartition(int(N_satellites), cities_spherical[1:], cities_weights, format, R, H, P, I_necessary, alpha, verbose)
+    satellites_spherical, cost = ssr.spherical_satellites_repartition(int(N_satellites), cities_spherical[:, 1:], cities_weights, format, R, H, P, I_necessary, alpha, verbose)
     print(satellites_spherical)   
     satellites_gps = spher2gps(satellites_spherical)
     print(satellites_gps)

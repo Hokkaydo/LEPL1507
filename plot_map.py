@@ -19,6 +19,8 @@ def plot_sphere(fig):
     fig.add_surface(x=x, y=y, z=z, colorscale=[[0, col], [1, col]], showscale = False, opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1))
        
 
+R = 6371
+
 def plot_countries(fig, file):
     """
     Draw countries on map
@@ -34,13 +36,13 @@ def plot_countries(fig, file):
         polys = file.loc[i].geometry         # Polygons or MultiPolygons
     
         if polys.geom_type == 'Polygon':
-            x, y, z = gps2cart(poly.exterior.coords.xy)
+            x, y, z = gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
         
         elif polys.geom_type == 'MultiPolygon':
         
             for poly in polys.geoms:
-                x, y, z = gps2cart(poly.exterior.coords.xy)
+                x, y, z = gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
                 fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
 def draw_circle_on_sphere(phi:float, theta:float, radius:float):
