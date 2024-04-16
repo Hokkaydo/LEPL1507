@@ -43,7 +43,7 @@ class Kmeans :
                         if tuple(new_position) not in self.problem.forbidden_cities:
                             centroids[i] = new_position
                             valid_position_found = True
-                        centroids[i] = valid_positions[np.random.randint(len(valid_positions))]
+                        centroids[i] = self.problem.cities_coordinates[np.random.randint(n)]
 
         old_centroids = None
         iteration = 0
