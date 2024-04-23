@@ -8,7 +8,6 @@ def spher2cart(X) :
     Returns:
         ndarray((n, 3)) containing x, y and z coordinates 
     """
-    print(X.shape)
     r, phi, theta = X.T
     x = r * np.sin(theta) * np.cos(phi)
     y = r * np.sin(theta) * np.sin(phi)
@@ -18,21 +17,32 @@ def spher2cart(X) :
 def gps2cart(X) :
     """
     Args: 
-        X: ndarray((n, 3)) containing radius, longitude and latitude coordinates
+        X: ndarray((n, 3)) containing radius, latitude and longitude coordinates
     Returns
         ndarray((n, 3)) containing x, y and z coordinates
     """
-    return spher2cart(gps2spher(X))
-    """r, longs, lats = X
-    x_coords = []; y_coords = []; z_coords = []
-    for lat, long in zip(lats, longs):
-        lat_rad = math.radians(lat)
-        lon_rad = math.radians(long)
-        x = math.sin(lon_rad) * math.cos(lat_rad)*r
-        y = math.sin(lon_rad) * math.sin(lat_rad)*r
-        z = math.cos(lon_rad)*r
-        x_coords.append(x) ; y_coords.append(y) ; z_coords.append(z)
-    return x_coords, y_coords, z_coords"""
+    R, lats, lons = X.T
+    
+    lons = lons * np.pi/180
+    lats = lats * np.pi/180
+    
+    x = R * np.cos(lats) * np.cos(lons)
+    y = R * np.cos(lats) * np.sin(lons)
+    z = R * np.sin(lats)
+    return np.array([x, y, z]).T
+
+def cart2gps(X):
+    """
+    Args:
+        X: ndarray((n, 3)) containing x, y and z coordinates
+    Returns:
+        ndarray((n, 3)) containing radius, latitude and longitude coordinates
+    """
+    x, y, z = X.T
+    R = (x**2 + y**2 + z**2)**0.5
+    lats = np.arcsin(z / R)
+    lons = np.arctan2(y, x)
+    return np.array((R, lats, lons)).T
 
 
 def cart2spher(X):
@@ -72,21 +82,13 @@ def spher2gps(data):
     Returns:
         ndarray((n, 3)) containing longitudes and latitude coordinates
     """
-    return np.array([
-        data.T[0],
-        data.T[1]*180/np.pi,
-        data.T[2]*180/np.pi
-    ]).T
-
+    return cart2gps(spher2cart(data))
+   
 def gps2spher(data):
     """
     Args:
-        ndarray((n, 2)) containing longitudes and latitude coordinates
+        ndarray((n, 2)) containing radius, latitude and longitude coordinates
     Returns:
-        ndarray((n, 2)) containing phi and theta coordinates 
+        ndarray((n, 2)) containing radius, phi and theta coordinates 
     """
-    return np.array([
-        data.T[0],
-        data.T[1]/180*np.pi,
-        data.T[2]/180*np.pi
-    ]).T
+    return cart2spher(gps2cart(data))

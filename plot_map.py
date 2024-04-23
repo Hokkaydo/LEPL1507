@@ -18,8 +18,15 @@ def plot_sphere(fig):
     z = np.outer(R*np.ones(phi.shape[0]), R*np.cos(theta))
     fig.add_surface(x=x, y=y, z=z, colorscale=[[0, col], [1, col]], showscale = False, opacity=1.0, showlegend=False, lighting=dict(diffuse=0.1))
        
+R = 6268.134
 
-R = 6371
+def plot_polygon(poly):
+    
+    xy_coords = poly.exterior.coords.xy
+    lon = np.array(xy_coords[0])
+    lat = np.array(xy_coords[1])
+    
+    return gps2cart(np.c_[np.ones(len(lon))*R, np.array([lat, lon]).T]).T
 
 def plot_countries(fig, file):
     """
@@ -36,13 +43,13 @@ def plot_countries(fig, file):
         polys = file.loc[i].geometry         # Polygons or MultiPolygons
     
         if polys.geom_type == 'Polygon':
-            x, y, z = gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
+            x, y, z = plot_polygon(polys) #gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
         
         elif polys.geom_type == 'MultiPolygon':
         
             for poly in polys.geoms:
-                x, y, z = gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
+                x, y, z = plot_polygon(poly)# gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
                 fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
 
 def draw_circle_on_sphere(phi:float, theta:float, radius:float):
@@ -85,9 +92,10 @@ def plot_satellite(satellites_spherical, rad):
             radius (float): radius of the surface coverd by the satellite
     '''
     clor =f'rgb(0, 0, 230)'
+    satellites_spherical[:, 0] /= 5
     
     x, y, z = spher2cart(satellites_spherical).T
-
+    
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
     
     for phi, theta in satellites_spherical[1:]:
