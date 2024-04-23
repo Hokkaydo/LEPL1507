@@ -63,13 +63,18 @@ def draw_circle_on_sphere(phi:float, theta:float, radius:float):
         Returns:
             Circular scatter points on a spherical surface
     '''
+    R = 6350
     x = []; y = []; z = []
-    for i in range(6, 600):
-        v = asin(radius/(i*1000))
+    v1 = np.arcsin(radius/R)
+    vec_v = np.linspace(0, v1, 300)
+    i  =0
+    for v in vec_v:
+        i+=1
+        print(f"v: {v*180/np.pi} à l'itération {i}")
         u = np.mgrid[0:2*np.pi:30j]
-        x1 = (np.sin(v)*np.cos(theta)*np.cos(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.cos(phi) - np.sin(v)*np.sin(phi)*np.sin(u))*(6428.134)
-        y1 = (np.sin(v)*np.cos(theta)*np.sin(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.sin(phi) + np.sin(v)*np.cos(phi)*np.sin(u))*6428.134
-        z1 = -np.sin(v)*np.sin(theta)*np.cos(u)*6428.134 + np.cos(v)*np.cos(theta)*6428.134
+        x1 = (np.sin(v)*np.cos(theta)*np.cos(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.cos(phi) - np.sin(v)*np.sin(phi)*np.sin(u))*R
+        y1 = (np.sin(v)*np.cos(theta)*np.sin(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.sin(phi) + np.sin(v)*np.cos(phi)*np.sin(u))*R
+        z1 = (-np.sin(v)*np.sin(theta)*np.cos(u) + np.cos(v)*np.cos(theta))*R
         x.append(x1) ; y.append(y1) ; z.append(z1)
         
     return x, y, z
@@ -94,15 +99,13 @@ def plot_satellite(satellites_spherical, rad):
             radius (float): radius of the surface coverd by the satellite
     '''
     clor =f'rgb(0, 0, 230)'
-    satellites_spherical[:, 0] /= 5
+    satellites_spherical[:, 0]*=0.18
     
     x, y, z = spher2cart(satellites_spherical).T
-    
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
-    
-    for phi, theta in satellites_spherical[1:]:
-        x, y, z = draw_circle_on_sphere(phi, theta, rad)
-        fig.add_surface(z=z, x=x, y=y, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
+    for phi, theta in satellites_spherical[:, 1:]:
+        x1, y1, z1 = draw_circle_on_sphere(phi, theta, rad)
+        fig.add_surface(z=z1, x=x1, y=y1, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
 
 def plot_fig(filename="temp-plot.html", auto_open=True):
     # Read the shapefile.  Creates a DataFrame object
