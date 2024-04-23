@@ -360,7 +360,13 @@ menu {
 /*
 Reset default styling for dialogs.
 */
-
+button:hover {
+  background-color: #d9dbdf;
+  cursor: pointer;
+}
+button:active {
+  background-color: #aeb0b2;
+}
 dialog {
   padding: 0;
 }

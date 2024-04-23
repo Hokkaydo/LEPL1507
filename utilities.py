@@ -21,7 +21,7 @@ def gps2cart(X) :
     Returns
         ndarray((n, 3)) containing x, y and z coordinates
     """
-    R, lats, lons = X.T
+    R, lons, lats = X.T
     
     lons = lons * np.pi/180
     lats = lats * np.pi/180
@@ -40,8 +40,8 @@ def cart2gps(X):
     """
     x, y, z = X.T
     R = (x**2 + y**2 + z**2)**0.5
-    lats = np.arcsin(z / R)
-    lons = np.arctan2(y, x)
+    lats = np.arcsin(z / R)*180/np.pi
+    lons = np.arctan(y, x)*180/np.pi
     return np.array((R, lats, lons)).T
 
 
@@ -68,9 +68,9 @@ def cart2spher(X):
     for i in range(len(r)):
         if x[i] > 0: phi.append(np.arctan(y[i] / x[i]))
         elif x[i] < 0 and y[i] >= 0: phi.append(np.pi + np.arctan(y[i] / x[i]))
-        elif x[i] < 0 and y[i] < 0: phi.append(-np.pi + np.arctan(y[i] / x[i]))
+        elif x[i] < 0 and y[i] < 0: phi.append(np.pi + np.arctan(y[i] / x[i]))
         elif x[i] == 0 and y[i] > 0: phi.append(np.pi / 2)
-        elif x[i] == 0 and y[i] < 0: phi.append(-np.pi / 2)
+        elif x[i] == 0 and y[i] < 0: phi.append(3*np.pi / 2)
         else: phi.append(0)
     phi = np.array(phi)    
     return np.array((r, phi, theta)).T

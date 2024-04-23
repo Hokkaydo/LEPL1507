@@ -23,8 +23,8 @@ R = 6268.134
 def plot_polygon(poly):
     
     xy_coords = poly.exterior.coords.xy
-    lon = np.array(xy_coords[0])
-    lat = np.array(xy_coords[1])
+    lon = np.array(xy_coords[1])
+    lat = np.array(xy_coords[0])
     
     return gps2cart(np.c_[np.ones(len(lon))*R, np.array([lat, lon]).T]).T
 
@@ -80,7 +80,9 @@ def plot_cities(cites_spherical, weights):
         Args:
             cities_gps: ndarray((n, 3)) containing radius, phi and theta                 
     '''
+    
     x, y, z = spher2cart(cites_spherical).T
+    
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(190, 0,0)', width = 6), marker=dict(size=weights/np.max(weights)*25), showlegend=False ) )
 
 def plot_satellite(satellites_spherical, rad):
