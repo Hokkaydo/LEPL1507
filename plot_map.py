@@ -9,7 +9,7 @@ from utilities import *
 
 def plot_sphere(fig):
     """plot sphere"""
-    col=f'rgb(125, 125, 125)'
+    col=f'rgb(220, 220, 220)'
     R = np.sqrt(6268.134)
     phi = np.linspace(0,2* np.pi, 45)
     theta = np.linspace(0, np.pi, 45)
@@ -44,13 +44,13 @@ def plot_countries(fig, file):
     
         if polys.geom_type == 'Polygon':
             x, y, z = plot_polygon(polys) #gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
-            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
+            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(40, 40, 40)'), showlegend=False))
         
         elif polys.geom_type == 'MultiPolygon':
         
             for poly in polys.geoms:
                 x, y, z = plot_polygon(poly)# gps2cart(np.c_[np.ones(len(poly.exterior.coords.xy))*R, np.array(poly.exterior.coords.xy)]).T
-                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(255, 255, 255)'), showlegend=False) )
+                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', line=dict(color=f'rgb(40, 40, 40)'), showlegend=False))
 
 def draw_circle_on_sphere(phi:float, theta:float, radius:float):
     '''
@@ -67,10 +67,7 @@ def draw_circle_on_sphere(phi:float, theta:float, radius:float):
     x = []; y = []; z = []
     v1 = np.arcsin(radius/R)
     vec_v = np.linspace(0, v1, 300)
-    i  =0
     for v in vec_v:
-        i+=1
-        print(f"v: {v*180/np.pi} à l'itération {i}")
         u = np.mgrid[0:2*np.pi:30j]
         x1 = (np.sin(v)*np.cos(theta)*np.cos(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.cos(phi) - np.sin(v)*np.sin(phi)*np.sin(u))*R
         y1 = (np.sin(v)*np.cos(theta)*np.sin(phi)*np.cos(u) + np.cos(v)*np.sin(theta)*np.sin(phi) + np.sin(v)*np.cos(phi)*np.sin(u))*R
@@ -103,6 +100,9 @@ def plot_satellite(satellites_spherical, rad):
     
     x, y, z = spher2cart(satellites_spherical).T
     fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='markers', line=dict(color=f'rgb(0, 0, 70)', width = 4), showlegend=False ) )
+    for i in range (len(x)):
+        fig.add_trace(go.Scatter3d(x=np.linspace(0, 1, 40)*x[i], y=np.linspace(0, 1, 40)*y[i], z=np.linspace(0, 1, 40)*z[i], mode='markers', line=dict(color=f'rgb(0, 0, 180)', width = 4), marker=dict(size=1.5), showlegend=False ) )
+            
     for phi, theta in satellites_spherical[:, 1:]:
         x1, y1, z1 = draw_circle_on_sphere(phi, theta, rad)
         fig.add_surface(z=z1, x=x1, y=y1, colorscale=[[0, clor], [1, clor]],showscale = False, opacity=0.5, showlegend=False, lighting=dict(diffuse=0.1))
@@ -122,7 +122,8 @@ def create_fig():
         xaxis = dict(visible=False),
         yaxis = dict(visible=False),
         zaxis =dict(visible=False)
-        )
+        ), 
+    hovermode = False
     )
 #Exemple de villes et satellites
 def test():
