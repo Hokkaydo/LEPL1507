@@ -5,7 +5,7 @@ from optimization import *
 from satellites_problem import *
 from utilities import *
 
-def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_weights, format = "spherical", R = 6371, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, verbose = False) :
+def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_weights, format = "spherical", R = 6371, H = 35786, P = 100e3, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, verbose = False) :
     """
     Cette fonction trouve les positions de N_satellites satellites de façon à couvrir le mieux possible les villes indiquées pour une terre sphérique.
 
@@ -31,9 +31,8 @@ def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_w
     problem = SatellitesProblem(3, N_satellites, cities_coordinates, cities_weights, R=R, H=H, P=P, I_necessary=I_necessary, alpha=alpha)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
-    print(problem.sat_coordinates)
-    optimization = Optimization(problem)
-    optimization.solve(verbose=verbose)
+    #optimization = Optimization(problem)
+    #optimization.solve(verbose=verbose)
     return np.c_[np.ones(N_satellites)*(R+H), problem.sat_coordinates], problem.cost
 
 if __name__ == '__main__' :

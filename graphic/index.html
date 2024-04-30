@@ -65,7 +65,7 @@
                     format: "spherical",
                     R: 6371,
                     H: 35786,
-                    P: 50,
+                    P: 100e3,
                     I_necessary: (10 ** ((-67 - 30) / 10)) * 1e4,
                     alpha: Math.PI,
                     verbose: true
@@ -107,7 +107,7 @@
             for (i = 0; i < n_random_cities_input.value; i++) {
                 long = Math.random()*(max_long - min_long) + min_long
                 lat = Math.random()*(max_lat - min_lat) + min_lat
-                w = Math.random()*100
+                w = Math.random()*10 + 10
                 cities.push([long, lat])
                 weights.push(w)
             }

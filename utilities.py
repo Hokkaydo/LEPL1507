@@ -41,7 +41,7 @@ def cart2gps(X):
     x, y, z = X.T
     R = (x**2 + y**2 + z**2)**0.5
     lats = np.arcsin(z / R)*180/np.pi
-    lons = np.arctan(y, x)*180/np.pi
+    lons = np.arctan2(y, x)*180/np.pi
     return np.array((R, lats, lons)).T
 
 

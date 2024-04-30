@@ -12,7 +12,7 @@ class Kmeans :
         solve
     """
 
-    def __init__(self, problem, max_iter = 300) :
+    def __init__(self, problem:SatellitesProblem, max_iter = 300) :
         self.problem = problem
         self.max_iter = max_iter
     
@@ -22,15 +22,17 @@ class Kmeans :
     def __kmeans3D(self) :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
         threshold = 1.0  # Définir la valeur de seuil = distance entre un kluster interdit et un centroid
-        print(self.problem.cities_coordinates.shape, "shape cities kmeans")
+
         cities_coordinates = spher2cart(np.c_[np.ones(len(self.problem.cities_coordinates))*self.problem.R, self.problem.cities_coordinates])
+
         for i in range(len(cities_coordinates)):
             cities_coordinates[i] /= np.linalg.norm(cities_coordinates[i])
         
         n = len(cities_coordinates)
         centroids = np.zeros((self.problem.N_satellites, 3))
         for i in range(self.problem.N_satellites):
-            centroids[i] = cities_coordinates[np.random.randint(n)]
+            centroids[i] = cities_coordinates[i%len(cities_coordinates)]
+        print(centroids)
         
         # Vérifier si les positions des satellites générées sont trop proche des villes interdites
         for i in range(self.problem.N_satellites):
@@ -48,12 +50,29 @@ class Kmeans :
 
         old_centroids = None
         iteration = 0
-        while old_centroids is None or iteration < self.max_iter:
+        while old_centroids is None or (iteration < self.max_iter and not np.allclose(old_centroids, centroids)):
             old_centroids = centroids
-            y = np.argmin(centroids@cities_coordinates.T, axis=0)
+            clusters = [[] for _ in range(self.problem.N_satellites)]
+
+            y = [] # one row per city, one column per satellite
+            
+            for i in range(n):
+                distances = np.array([np.linalg.norm(centroids[j] - cities_coordinates[i]) for j in range(self.problem.N_satellites)])
+                y.append(np.argsort(distances))
+            y = np.array(y)
+                        
+            for i in range(n):
+                j = 0
+                while j < self.problem.N_satellites and (sum(map(lambda x: self.problem.cities_weights[x], clusters[y[i, j]])) + self.problem.cities_weights[i]) * self.problem.I_necessary >= self.problem.P/(36e3)**2:
+                    j+=1
+                if j == self.problem.N_satellites:
+                    print("Warning: A city is not covered by any satellite.")
+                    continue
+                print(j)
+                clusters[y[i, j]].append(i)
+
             for k in range(self.problem.N_satellites):
-                Xk = cities_coordinates[[y[i] == k for i in range(n)]]
-                s = np.sum(Xk, axis=0)
+                s = np.sum(cities_coordinates[clusters[k]], axis=0)
 
                 norm = np.linalg.norm(s)
                 if len(s) == 0 or norm == 0:

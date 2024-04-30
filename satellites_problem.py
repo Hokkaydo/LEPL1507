@@ -25,7 +25,7 @@ class SatellitesProblem :
 
     """
 
-    def __init__(self, dimension, N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 50, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, forbidden_cities=[], penalty=1000) :
+    def __init__(self, dimension, N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 100e3, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, forbidden_cities=[], penalty=1000) :
         self.dimension = dimension
         self.N_satellites = N_satellites
         self.cities_coordinates =  cities_coordinates
