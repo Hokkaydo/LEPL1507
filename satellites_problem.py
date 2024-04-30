@@ -51,7 +51,7 @@ class SatellitesProblem :
             X2 = np.append(np.array(self.sat_coordinates   [index_sat],  self.H))
         elif self.dimension == 3 :
             X1 = spher2cart(np.array([self.R, self.cities_coordinates[index_city][0], self.cities_coordinates[index_city][1]]))
-            X2 = spher2cart(np.array([self.H, self.sat_coordinates   [index_sat] [0], self.sat_coordinates   [index_sat] [1]]))
+            X2 = spher2cart(np.array([self.H + self.R, self.sat_coordinates   [index_sat] [0], self.sat_coordinates   [index_sat] [1]]))
         return np.linalg.norm(X1 - X2)
     
     def __cost_city(self, index_city, continuous = False, alpha = 0.99, gamma = 10) :
