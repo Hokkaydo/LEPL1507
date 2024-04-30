@@ -5,7 +5,7 @@ from optimization import *
 from satellites_problem import *
 from utilities import *
 
-def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_weights, format = "spherical", R = 6371, H = 35786, P = 100e3, I_necessary = (10**((-67-30)/10))*1e4, alpha = np.pi, verbose = False) :
+def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 35786 + 6371, P = 100e3, I_necessary = (10**((-67-30)/10)), verbose = False) :
     """
     Cette fonction trouve les positions de N_satellites satellites de façon à couvrir le mieux possible les villes indiquées pour une terre sphérique.
 
@@ -27,18 +27,25 @@ def spherical_satellites_repartition (N_satellites, cities_coordinates, cities_w
         satellites_coordinates (nparray(nparray(float, float))) : liste contenant les coordonnées des satellites sur la terre après optimisation sous le même format que celui avec lequel les coordonnées des villes avaient été fournies.
         cost                   (float)                          : coût de la fonction objectif avec cette répartition des satellites.
     """
-    if format == "cartesian" : cities_coordinates = np.array([cart2spher(cities_coordinates[i])[1:] for i in range(len(cities_coordinates))])
-    problem = SatellitesProblem(3, N_satellites, cities_coordinates, cities_weights, R=R, H=H, P=P, I_necessary=I_necessary, alpha=alpha)
+
+    problem = SatellitesProblem(dimension=3, R=R, H=H, P=P, I_necessary=I_necessary)
+    problem.input_from_file(file_name, N_satellites)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
-    #optimization = Optimization(problem)
-    #optimization.solve(verbose=verbose)
-    return np.c_[np.ones(N_satellites)*(R+H), problem.sat_coordinates], problem.cost
+    problem.value = problem.cost()
+    cover = problem.coverage()
+    if cover >= 1 : return problem.sat_coordinates, problem.cost
+    print(f"La couverture actuelle est de {problem.coverage()}.")
+    print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ? Cela peut prendre un peu de temps.")
+    answer = input("[oui/non] ")
+    if answer == "oui" :
+        optimization = Optimization(problem)
+        optimization.solve(verbose=verbose)
+    return problem.sat_coordinates, problem.cost
 
 if __name__ == '__main__' :
-    N_satellites = 15
-    N_cities = 30
-    cities_coordinates = np.vstack((np.random.uniform(0, 2*np.pi, N_cities), np.random.uniform(0, np.pi, N_cities))).T
-    cities_weights = np.random.uniform(0, 1, N_cities)
+    file_name = input("Nom du fichier avec les données : ")
+    N_satellites = int(input("Nombre de satellites : "))
 
-    sat_coordinates, cost = spherical_satellites_repartition(N_satellites, cities_coordinates, cities_weights, alpha=np.deg2rad(5), verbose=True)
+    sat_coordinates, cost = spherical_satellites_repartition(N_satellites, file_name, verbose=True)
+    print(sat_coordinates)

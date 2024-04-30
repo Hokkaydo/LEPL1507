@@ -21,10 +21,10 @@ def gps2cart(X) :
     Returns
         ndarray((n, 3)) containing x, y and z coordinates
     """
-    R, lons, lats = X.T
+    R, lats, lons = X.T
     
-    lons = lons * np.pi/180
     lats = lats * np.pi/180
+    lons = lons * np.pi/180
     
     x = R * np.cos(lats) * np.cos(lons)
     y = R * np.cos(lats) * np.sin(lons)

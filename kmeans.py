@@ -23,7 +23,7 @@ class Kmeans :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
         threshold = 1.0  # Définir la valeur de seuil = distance entre un kluster interdit et un centroid
 
-        cities_coordinates = spher2cart(np.c_[np.ones(len(self.problem.cities_coordinates))*self.problem.R, self.problem.cities_coordinates])
+        cities_coordinates = gps2cart(self.problem.cities_coordinates)
 
         for i in range(len(cities_coordinates)):
             cities_coordinates[i] /= np.linalg.norm(cities_coordinates[i])
@@ -32,9 +32,9 @@ class Kmeans :
         centroids = np.zeros((self.problem.N_satellites, 3))
         for i in range(self.problem.N_satellites):
             centroids[i] = cities_coordinates[i%len(cities_coordinates)]
-        print(centroids)
+        #print(centroids)
         
-        # Vérifier si les positions des satellites générées sont trop proche des villes interdites
+        """# Vérifier si les positions des satellites générées sont trop proche des villes interdites
         for i in range(self.problem.N_satellites):
             for forbidden_city in self.problem.forbidden_cities:
                 distance = np.linalg.norm(centroids[i] - forbidden_city)
@@ -46,7 +46,7 @@ class Kmeans :
                         if tuple(new_position) not in self.problem.forbidden_cities:
                             centroids[i] = new_position
                             valid_position_found = True
-                        centroids[i] = cities_coordinates[np.random.randint(n)]
+                        centroids[i] = cities_coordinates[np.random.randint(n)]"""
 
         old_centroids = None
         iteration = 0
@@ -68,7 +68,7 @@ class Kmeans :
                 if j == self.problem.N_satellites:
                     print("Warning: A city is not covered by any satellite.")
                     continue
-                print(j)
+                #print(j)
                 clusters[y[i, j]].append(i)
 
             for k in range(self.problem.N_satellites):
@@ -80,14 +80,12 @@ class Kmeans :
                     continue
                 centroids[k] = s/norm
             iteration+=1
-        self.problem.sat_coordinates = cart2spher(centroids*(self.problem.R + self.problem.H))[:, 1:]
+        self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
         return iteration
     
     def solve(self, verbose = False) :
         if verbose :
             print("Lancement de l'algorithme de Kmeans.")
-            old_cost = self.problem.value
-            print(f"La puissance totale reçue actuellement est de {old_cost * 1e6 :.2f}µW, ce qui représente une couverture de {self.problem.coverage() * 100 : .2f}%.")
         if   self.problem.dimension == 2 : self.__kmeans2D()
         elif self.problem.dimension == 3 : iteration = self.__kmeans3D()
         self.problem.value = self.problem.cost()
@@ -96,4 +94,4 @@ class Kmeans :
             if iteration == self.max_iter : print("Le nombre d'itérations maximal a été atteint.")
             else                          : print("L'algorithme s'est déroulé avec succès.")
             new_cost = self.problem.value
-            print(f"La nouvelle puissance totale reçue est de {new_cost * 1e6 :.2f}µW, ce qui représente une amélioration de {100 * (new_cost - old_cost)/old_cost :.2f}%. La couverture est maintenant de {self.problem.coverage() * 100 :.2f}%.\n")
+            print(f"La puissance totale reçue est de {new_cost * 1e6 :.2f}µW. La couverture est de {self.problem.coverage() * 100 :.2f}%.\n")
