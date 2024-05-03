@@ -21,8 +21,7 @@ class Kmeans :
     
     def __kmeans3D(self) :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
-        threshold = 1.0  # Définir la valeur de seuil = distance entre un kluster interdit et un centroid
-
+        
         cities_coordinates = gps2cart(self.problem.cities_coordinates)
 
         for i in range(len(cities_coordinates)):
@@ -32,21 +31,6 @@ class Kmeans :
         centroids = np.zeros((self.problem.N_satellites, 3))
         for i in range(self.problem.N_satellites):
             centroids[i] = cities_coordinates[i%len(cities_coordinates)]
-        #print(centroids)
-        
-        """# Vérifier si les positions des satellites générées sont trop proche des villes interdites
-        for i in range(self.problem.N_satellites):
-            for forbidden_city in self.problem.forbidden_cities:
-                distance = np.linalg.norm(centroids[i] - forbidden_city)
-                if distance < threshold:
-                    # Choisir une autre position aléatoire pour ce satellite
-                    valid_position_found = False
-                    while not valid_position_found:
-                        new_position = np.random.choice(cities_coordinates)
-                        if tuple(new_position) not in self.problem.forbidden_cities:
-                            centroids[i] = new_position
-                            valid_position_found = True
-                        centroids[i] = cities_coordinates[np.random.randint(n)]"""
 
         old_centroids = None
         iteration = 0
@@ -68,7 +52,7 @@ class Kmeans :
                 if j == self.problem.N_satellites:
                     print("Warning: A city is not covered by any satellite.")
                     continue
-                #print(j)
+
                 clusters[y[i, j]].append(i)
 
             for k in range(self.problem.N_satellites):

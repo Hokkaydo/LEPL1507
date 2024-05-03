@@ -5,16 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulation couverture satellitaire</title>
-    <link href="index.css" rel="stylesheet"/> 
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/index.css') }}">
 </head>
 
 <body class="w-full h-full relative">
     <div class="absolute h-full w-96 flex items-center right-12">
-        <div class="flex flex-col gap-2 justify-center w-96 h-2/3 bg-gray-100 rounded-xl p-8">
-            <label for="N_satellites">Nombre de satellites :</label>
-            <input type="number" id="N_satellites"
-                class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
+        <div class="flex flex-col gap-2 justify-center w-96 bg-gray-100 rounded-xl p-8">
+            <div class="flex justify-between w-full">
+                <div class="flex flex-col">
+                    <label for="N_satellites">Nombre de satellites :</label>
+                    <input type="number" id="N_satellites"
+                        class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
+
+                </div>
+                <div class="flex flex-col w-min">
+                    <label for="optimize_locally">Optimiser localement:</label>
+                    <input type="checkbox" id="optimize_locally"
+                        class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
+                </div>
+            </div>
             <div class="flex justify-center gap-2 items-center">
                 <div class="flex items-center flex-col">
                     <label for="lat">Latitude</label>
@@ -32,55 +41,135 @@
                         class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
                 </div>
             </div>
-            <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onclick="add_city()">Ajouter une ville</button>
+            <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onclick="add_city()">Ajouter une
+                ville</button>
             <div class="flex">
-                <button class="rounded-l-xl border-gray-200 border-2 border-r-0 p-2 w-full" onclick="add_random_cities()">Ajouter</button>
-                <input type="number" id="n_random_cities" class="text-sm block p-2.5 bg-inherit border-2 border-gray-200 w-16" />
-                <button class="rounded-r-xl border-gray-200 border-2 border-l-0 p-2 w-full" onclick="add_random_cities()"> villes aléatoires</button>
+                <button class="rounded-l-xl border-gray-200 border-2 border-r-0 p-2 w-full"
+                    onclick="add_random_cities()">Ajouter</button>
+                <input type="number" id="n_random_cities"
+                    class="text-sm block p-2.5 bg-inherit border-2 border-gray-200 w-16" />
+                <button class="rounded-r-xl border-gray-200 border-2 border-l-0 p-2 w-full"
+                    onclick="add_random_cities()"> villes aléatoires</button>
             </div>
             <div id="cities" class="flex flex-col max-h-48 overflow-scroll"></div>
-            <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onClick="clear_cities()">Supprimer les villes</button>
-    
-            <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onClick="compute()">Calculer</button>
-        </div>    
-    </div>
-    <iframe id="content" class="h-full w-full"></iframe>
+            <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onClick="clear_cities()">Supprimer les
+                villes</button>
 
+
+            <div class="flex items-center justify-center w-full">
+                <label for="dropzone-file"
+                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-transparent">
+                    <div class="flex flex-col items-center justify-center pt-2 pb-3">
+                        <svg class="w-8 h-8 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                        </svg>
+                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400 text-center"><span
+                                class="font-semibold">Cliquez</span> ou glissez-déposez un fichier contenant les villes
+                            au format précisé dans l'énoncé</p>
+                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400 text-center">Sélectionné: <span
+                                id="csv-file-name" class="font-semibold">None</span></p>
+                    </div>
+                    <input id="dropzone-file" type="file" class="hidden" />
+                </label>
+            </div>
+
+            <div class="flex">
+                <button class="rounded-l-xl border-gray-200 border-2 p-2 w-full" onclick="compute(false)">Utiliser les
+                    points sélectionnés</button>
+                <button class="rounded-r-xl border-gray-200 border-2 border-l-0 p-2 w-full"
+                    onclick="compute(true)">Utiliser le fichier CSV</button>
+            </div>
+        </div>
+    </div>
+
+
+    <iframe id="content" class="h-full w-full"></iframe>
+    <div class="absolute bottom-0">
+        <div class="flex justify-center w-full">
+            <p><span class="font-semibold p-4">Coût: </span><span id="cost">0</span></p>
+            <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>    
+        </div>
+    </div>
     <script>
 
         cities = []
         weights = []
         N_satellites_input = document.getElementById('N_satellites')
-        function compute() {
+        optimize_locally_input = document.getElementById('optimize_locally')
+        csv_input = document.getElementById('dropzone-file')
+        csv_input.value = "";
+        csv_file_name = document.getElementById('csv-file-name')
 
-            console.log("Computing");
+        content = document.getElementById('content')
+        cost = document.getElementById('cost')
+        coverage = document.getElementById('coverage')
+
+        csv_input.addEventListener('change', function () {
+            const file = csv_input.files[0];
+            csv_file_name.textContent = file.name;
+        });
+
+        function compute(csv) {
+
+            if(!N_satellites_input.value){
+                alert("Veuillez entrer le nombre de satellites")
+                return;
+            }
+
+            body = {}
+
+            body['N_satellites'] = N_satellites_input.value;
+            body['csv'] = csv;
+            body['cities'] = cities;
+            body['weights'] = weights;
+            body['R'] = 6371;
+            body['optimize_decided'] = true;
+            body['optimize_locally'] = optimize_locally_input.checked;
+            body['csv_content'] = "";
+
+            if (csv) {
+                if (csv_input.files.length == 0) {
+                    alert("Veuillez sélectionner un fichier CSV")
+                    return;
+                }
+                console.log(csv_input.files[0].name);
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    csv_content = event.target.result;
+
+                    b64 = btoa(csv_content);
+                    body['csv_content'] = b64;
+
+                    call(body);
+                }
+                reader.readAsText(csv_input.files[0]);
+            } else {
+                call(body);
+            }
+        }
+
+        function call(body) {
+            console.log(body);
             fetch("/compute", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    N_satellites: N_satellites_input.value,
-                    cities_coordinates: cities,
-                    cities_weights: weights,
-                    format: "spherical",
-                    R: 6371,
-                    H: 35786,
-                    P: 100e3,
-                    I_necessary: (10 ** ((-67 - 30) / 10)) * 1e4,
-                    alpha: Math.PI,
-                    verbose: true
-                })
+                body: JSON.stringify(body)
             })
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('content').src = "plot";
-                    console.log(data['content']);
+                    content.src = "plot";
+                    cost.textContent = data['cost'];
+                    coverage.textContent = data['coverage'];
                 })
                 .finally(() => {
                     console.log("Done");
                 });
         }
+
         lat_input = document.getElementById('lat')
         long_input = document.getElementById('long')
         w_input = document.getElementById('w')
@@ -89,7 +178,7 @@
             console.log(cities)
             cities.push([lat_input.value, long_input.value])
             weights.push(w_input.value)
-            console.log("Adding w:" + w_input.value  + " ,lat:" + lat_input.value + ", long:" + long_input.value)
+            console.log("Adding w:" + w_input.value + " ,lat:" + lat_input.value + ", long:" + long_input.value)
             update_cities()
         }
 
@@ -106,9 +195,9 @@
 
         function add_random_cities() {
             for (i = 0; i < n_random_cities_input.value; i++) {
-                long = Math.random()*(max_long - min_long) + min_long
-                lat = Math.random()*(max_lat - min_lat) + min_lat
-                w = Math.random()*10 + 10
+                long = Math.random() * (max_long - min_long) + min_long
+                lat = Math.random() * (max_lat - min_lat) + min_lat
+                w = Math.random() * 10 + 10
                 cities.push([long, lat])
                 weights.push(w)
             }
@@ -121,11 +210,11 @@
                 cities_div.innerHTML += `
                 <div class="flex justify-between w-full px-2">
                     <div class="flex gap-2 w-11/12">
-                        <p>Long: ${cities[i][0]}</p>
-                        <p>lat: ${cities[i][1]}</p>
+                        <p>Lat: ${cities[i][0]}</p>
+                        <p>Long: ${cities[i][1]}</p>
                         <p>W: ${weights[i]}</p>
                     </div>
-                    <img src="close.svg" onClick="delete_city(${i})" class="self-end w-1/12 text-gray-200">
+                    <img src="{{ url_for('static',filename='close.svg') }}" onClick="delete_city(${i})" class="self-end w-1/12 text-gray-200">
                 </div>
                 `
             }

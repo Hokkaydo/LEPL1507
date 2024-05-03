@@ -55,7 +55,6 @@ class Optimization :
             alpha = self.__find_alpha(grad, direction)
             if (alpha == -1) : break
             self.problem.sat_coordinates += alpha * direction
-            print(alpha)
             self.problem.value = self.problem.cost()
             print(f"Après {iteration} itérations, la puissance totale reçue est de {self.problem.value * 1e6 :.2f}µW")
             print(abs(self.problem.value - old_value))
