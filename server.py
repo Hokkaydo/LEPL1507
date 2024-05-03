@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS, cross_origin
 import spherical_satellites_repartition as ssr
 import numpy as np
@@ -14,7 +14,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return render_template('index.html')
+
+@app.route('/plot')
+def plot():
+    return render_template('temp_plot.html')
 
 @app.route('/compute', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type'])
@@ -36,8 +40,8 @@ def compute():
     plot_map.plot_cities(cities_spherical, cities_weights)
     plot_map.plot_satellite(satellites_spherical, 3500)
     filename = "temp_plot.html"
-    plot_map.plot_fig(filename, auto_open=False)
-    return {'content': os.path.abspath(filename), 'cost': cost()}
+    plot_map.plot_fig("templates/" + filename, auto_open=False)
+    return {'content': filename, 'cost': cost()}
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
