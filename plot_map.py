@@ -23,8 +23,8 @@ R = 6268.134
 def plot_polygon(poly):
     
     xy_coords = poly.exterior.coords.xy
-    lon = np.array(xy_coords[1])
-    lat = np.array(xy_coords[0])
+    lon = np.array(xy_coords[0])
+    lat = np.array(xy_coords[1])
     
     return gps2cart(np.c_[np.ones(len(lon))*R, np.array([lat, lon]).T]).T
 

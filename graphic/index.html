@@ -16,13 +16,13 @@
                 class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
             <div class="flex justify-center gap-2 items-center">
                 <div class="flex items-center flex-col">
-                    <label for="long">Longitude</label>
-                    <input type="number" id="long"
+                    <label for="lat">Latitude</label>
+                    <input type="number" id="lat"
                         class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
                 </div>
                 <div class="flex items-center flex-col">
-                    <label for="lat">Latitude</label>
-                    <input type="number" id="lat"
+                    <label for="long">Longitude</label>
+                    <input type="number" id="long"
                         class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
                 </div>
                 <div class="flex items-center flex-col">
@@ -80,15 +80,15 @@
                     console.log("Done");
                 });
         }
-        long_input = document.getElementById('long')
         lat_input = document.getElementById('lat')
+        long_input = document.getElementById('long')
         w_input = document.getElementById('w')
         cities_div = document.getElementById('cities')
         function add_city() {
             console.log(cities)
-            cities.push([long_input.value, lat_input.value])
+            cities.push([lat_input.value, long_input.value])
             weights.push(w_input.value)
-            console.log("Adding w:" + w_input.value  + " ,long:" + long_input.value + ", lat:" + lat_input.value)
+            console.log("Adding w:" + w_input.value  + " ,lat:" + lat_input.value + ", long:" + long_input.value)
             update_cities()
         }
 

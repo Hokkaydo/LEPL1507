@@ -4,6 +4,7 @@ import spherical_satellites_repartition as ssr
 import numpy as np
 import plot_map
 from utilities import *
+from generate_data import write_file
 import os
 
 app = Flask(__name__)
@@ -27,13 +28,13 @@ def compute():
     cities_spherical = gps2spher(cities_gps)
     cities_weights = np.array(cities_weights).astype(np.float64)
     
-    satellites_spherical, cost = ssr.spherical_satellites_repartition(int(N_satellites), cities_spherical[:, 1:], cities_weights, format, R, H, P, I_necessary, alpha, verbose)
-    #print(satellites_spherical)   
-    satellites_gps = spher2gps(satellites_spherical)
-    print(satellites_gps)
+    write_file("csv_data", cities_weights, cities_gps.T[1], cities_gps.T[2])
+    satellites_gps, cost = ssr.spherical_satellites_repartition(N_satellites=N_satellites, file_name="csv_data")
+    #satellites_spherical, cost = ssr.spherical_satellites_repartition(int(N_satellites), cities_spherical[:, 1:], cities_weights, format, R, H, P, I_necessary, alpha, verbose) 
+    satellites_spherical = gps2spher(satellites_gps)
     plot_map.create_fig()
     plot_map.plot_cities(cities_spherical, cities_weights)
-    plot_map.plot_satellite(satellites_spherical, 1)
+    plot_map.plot_satellite(satellites_spherical, 3500)
     filename = "temp_plot.html"
     plot_map.plot_fig(filename, auto_open=False)
     return {'content': os.path.abspath(filename), 'cost': cost()}
