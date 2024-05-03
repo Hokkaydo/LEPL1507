@@ -43,4 +43,15 @@ if __name__ == '__main__' :
     N_satellites = int(input("Nombre de satellites : "))
 
     sat_coordinates, cost = euclidean_satellites_repartition(N_satellites, file_name, verbose=True)
-    print(sat_coordinates)
+    sat = pd.DataFrame()
+    sat["X"] = sat_coordinates[:,0]
+    sat["Y"] = sat_coordinates[:,1]
+    sat["Z"] = sat_coordinates[:,2]
+    print("Merci d'avoir utilisé notre application pour trouver la position de vos satellites.")
+    print("Où souhaitez-vous que nous imprimions les coordonnées finales des satellites ?")
+    answer = input("[stdout/<filename>] ")
+    if answer == "stdout" :
+        print(sat)
+    else :
+        sat.to_csv(answer)
+    print("Bonne journée :)")

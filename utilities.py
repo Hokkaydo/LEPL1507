@@ -23,8 +23,8 @@ def gps2cart(X) :
     """
     R, lats, lons = X.T
     
-    lats = lats * np.pi/180
-    lons = lons * np.pi/180
+    lats = np.deg2rad(lats)
+    lons = np.deg2rad(lons)
     
     x = R * np.cos(lats) * np.cos(lons)
     y = R * np.cos(lats) * np.sin(lons)
