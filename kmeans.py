@@ -1,4 +1,5 @@
 from satellites_problem import *
+from math import floor
 
 class Kmeans :
     """
@@ -17,7 +18,36 @@ class Kmeans :
         self.max_iter = max_iter
     
     def __kmeans2D(self) :
-        ...
+        n = self.problem.N_satellites
+
+        cities_coordinates = self.problem.cities_coordinates
+        weights = self.problem.cities_weights
+        
+        centroids = np.zeros((self.problem.N_satellites, 2))
+        for i in range(self.problem.N_satellites):
+            centroids[i] = cities_coordinates[i%len(cities_coordinates)]
+
+        iteration = 0
+        prev_centroids = None
+        while prev_centroids is None or (iteration < self.max_iter and not np.allclose(prev_centroids, centroids)):
+            classif = {i:{} for i in range(n)}
+            for i in range(len(cities_coordinates)):
+                dist = [np.linalg.norm(cities_coordinates[i] - c) for c in centroids]
+
+                closest_cluster = dist.index(min(dist))
+                classif[closest_cluster][i] = cities_coordinates[i]
+                
+            prev_centroids = centroids.copy()
+            for cluster in range(len(classif)):
+                if len(classif[cluster]) == 0:
+                    centroids[cluster] = cities_coordinates[np.random.randint(0, n)]
+                else:
+                    indexes = [i for i in classif[cluster].keys()]
+                    centroids[cluster] = np.average(cities_coordinates[indexes], axis=0, weights=weights[indexes])
+            iteration += 1
+                     
+        self.problem.sat_coordinates = centroids
+        return iteration
     
     def __kmeans3D(self) :
         ### ATTENTION DEFINIR UNE VALEUR  de seuil###
