@@ -20,16 +20,16 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
         I_necessary (float) : intensité nécessaire pour satisfaire une personne (en W). Par défaut, une valeur de -67dBm a été choisie.
         verbose     (bool)  : booléen indiquant si les détails de l'optimisation doivent être imprimés dans la sortie standard
 
-    Return :
-        satellites_coordinates (nparray(nparray(float, float))) : liste contenant les coordonnées des satellites sur la terre après optimisation. Les coordonnées sont renvoyées au format géographique (altitude, latitude, longitude).
-        cost                   (float)                          : coût de la fonction objectif avec cette répartition des satellites.
+    Retourne :
+        satellites_coordinates (ndarray((N_satellites, 3))) : liste contenant les coordonnées des satellites sur la terre après optimisation. Les coordonnées sont renvoyées au format géographique (rayon, latitude, longitude).
+        cost                   (float)                      : coût de la fonction objectif avec cette répartition des satellites.
     """
 
     problem = SatellitesProblem(dimension=3, R=R, H=H, P=P, I_necessary=I_necessary)
     problem.input_from_file(file_name, N_satellites)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
-    problem.value = problem.cost()
+    problem.cost()
     cover = problem.coverage()
     if cover >= 1 : return problem.sat_coordinates, problem.cost
     print(f"La couverture actuelle est de {cover * 100 :.2f}%.")
@@ -52,10 +52,9 @@ if __name__ == '__main__' :
     sat["Latitude"]  = sat_coordinates[:,1]
     sat["Longitude"] = sat_coordinates[:,2]
     print("Merci d'avoir utilisé notre application pour trouver la position de vos satellites.")
+
     print("Où souhaitez-vous que nous imprimions les coordonnées finales des satellites ?")
     answer = input("[stdout/<filename>] ")
-    if answer == "stdout" :
-        print(sat)
-    else :
-        sat.to_csv(answer)
+    if answer == "stdout" : print(sat)
+    else                  : sat.to_csv(answer)
     print("\nBonne journée :)")

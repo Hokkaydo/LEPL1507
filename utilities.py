@@ -3,10 +3,15 @@ import math
 
 def spher2cart(X) :
     """
-    Args:
-        ndarray((n, 3)) containing radius, phi and theta coordinates
-    Returns:
-        ndarray((n, 3)) containing x, y and z coordinates 
+    Transforme des coordonnées sphériques en coordonnées cartésiennes
+
+    Argument :
+        X (ndarray((n, 3))) : Tableau de coordonnées sphériques (rayon, phi, theta)
+
+    Retourne :
+        ndarray((n, 3))     : Tableau de coordonnées cartésiennes (x,y,z) correspondant aux mêmes points que ceux de X
+
+    Complexité : O(n) 
     """
     r, phi, theta = X.T
     x = r * np.sin(theta) * np.cos(phi)
@@ -14,43 +19,17 @@ def spher2cart(X) :
     z = r * np.cos(theta)
     return np.array((x, y, z)).T
 
-def gps2cart(X) :
-    """
-    Args: 
-        X: ndarray((n, 3)) containing radius, latitude and longitude coordinates
-    Returns
-        ndarray((n, 3)) containing x, y and z coordinates
-    """
-    R, lats, lons = X.T
-    
-    lats = np.deg2rad(lats)
-    lons = np.deg2rad(lons)
-    
-    x = R * np.cos(lats) * np.cos(lons)
-    y = R * np.cos(lats) * np.sin(lons)
-    z = R * np.sin(lats)
-    return np.array([x, y, z]).T
-
-def cart2gps(X):
-    """
-    Args:
-        X: ndarray((n, 3)) containing x, y and z coordinates
-    Returns:
-        ndarray((n, 3)) containing radius, latitude and longitude coordinates
-    """
-    x, y, z = X.T
-    R = (x**2 + y**2 + z**2)**0.5
-    lats = np.arcsin(z / R)*180/np.pi
-    lons = np.arctan2(y, x)*180/np.pi
-    return np.array((R, lats, lons)).T
-
-
 def cart2spher(X):
     """
-    Args:
-        X: ndarray((n, 3)) containing, x, y and z coordinates
-    Args:
-        ndarray((n, 3)) containing radius, phi and theta coordinates
+    Transforme des coordonnées cartésiennes en coordonnées sphériques
+
+    Arguments :
+        X (ndarray((n, 3))) : Tableau de coordonnées cartésiennes (x,y,z)
+
+    Retourne :
+        ndarray((n, 3))     : Tableay de coordonnées sphériques (rayon, phi, theta) correspondant aux mêmes points que ceux de X
+    
+    Complexité : O(n)
     """
     x, y, z = X.T
     r = (x**2 + y**2 + z**2)**0.5
@@ -75,20 +54,71 @@ def cart2spher(X):
     phi = np.array(phi)    
     return np.array((r, phi, theta)).T
 
-def spher2gps(data):
+def gps2cart(X) :
     """
-    Args:
-        ndarray((n, 3)) containing phi and theta coordinates 
-    Returns:
-        ndarray((n, 3)) containing longitudes and latitude coordinates
+    Transforme des coordonnées géographiques en coordonnées cartésiennes
+
+    Arguments : 
+        X (ndarray((n, 3))) : Tableau de coordonnées géographiques (rayon, lat, long)
+
+    Retourne :
+        ndarray((n, 3))     : Tableau de coordonnées cartésiennes (x,y,z) correspondant aux mêmes points que ceux de X
+    
+    Complexité : O(n)
     """
-    return cart2gps(spher2cart(data))
+    R, lats, lons = X.T
+    
+    lats = np.deg2rad(lats)
+    lons = np.deg2rad(lons)
+    
+    x = R * np.cos(lats) * np.cos(lons)
+    y = R * np.cos(lats) * np.sin(lons)
+    z = R * np.sin(lats)
+    return np.array([x, y, z]).T
+
+def cart2gps(X):
+    """
+    Transforme des coordonnées cartésiennes et coordonnées géographiques
+
+    Arguments : 
+        X (ndarray((n, 3))) : Tableau de coordonnées cartésiennes (x,y,z)
+
+    Retourne :
+        ndarray((n, 3))     : Tableau de coordonnées géographiques (rayon, lat, long) correspondant aux mêmes points que ceux de X
+    
+    Complexité : O(n)
+    """
+    x, y, z = X.T
+    R = (x**2 + y**2 + z**2)**0.5
+    lats = np.arcsin(z / R)*180/np.pi
+    lons = np.arctan2(y, x)*180/np.pi
+    return np.array((R, lats, lons)).T
+
+
+def spher2gps(X):
+    """
+    Transforme des coordonnées sphériques en coordonnées géographiques
+
+    Arguments : 
+        X (ndarray((n, 3))) : Tableau de coordonnées sphériques (rayon, phi, theta) 
+
+    Retourne :
+        ndarray((n, 3))     : Tableau de coordonnées géographiques (rayon, lat, long) correspondant aux mêmes points que ceux de X
+    
+    Complexité : O(n)
+    """
+    return cart2gps(spher2cart(X))
    
-def gps2spher(data):
+def gps2spher(X):
     """
-    Args:
-        ndarray((n, 2)) containing radius, latitude and longitude coordinates
-    Returns:
-        ndarray((n, 2)) containing radius, phi and theta coordinates 
+    Transforme des coordonnées géographiques en coordonnées sphériques
+
+    Arguments : 
+        X (ndarray((n, 3))) : Tableau de coordonnées géographiques (rayon, lat, long) 
+
+    Retourne :
+        ndarray((n, 3))     : Tableau de coordonnées sphériques (rayon, phi, theta) correspondant aux mêmes points que ceux de X
+    
+    Complexité : O(n)
     """
-    return cart2spher(gps2cart(data))
+    return cart2spher(gps2cart(X))
