@@ -49,7 +49,9 @@ class Optimization :
             iteration += 1
             old_value = self.problem.value
             grad = self.problem.grad()
-            direction = grad/np.linalg.norm(np.reshape(grad, 3*len(grad)))
+            norm_grad = np.linalg.norm(np.reshape(grad, 3*len(grad)))
+            if norm_grad == 0 : break
+            direction = grad/norm_grad
             alpha = self.__find_alpha(grad, direction)
             if (alpha == -1) : break
             self.problem.sat_coordinates += alpha * direction
