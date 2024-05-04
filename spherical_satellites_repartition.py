@@ -36,7 +36,7 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     cover = problem.coverage()
     global coverage
     coverage = cover
-    if cover >= 1 : return problem.sat_coordinates, problem.cost
+    if np.isclose(cover, 1) : return problem.sat_coordinates, problem.cost
     if not optimisation_decided:
         print(f"La couverture actuelle est de {cover * 100 :.2f}%.")
         print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ?")

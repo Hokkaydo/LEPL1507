@@ -45,6 +45,7 @@ class Optimization :
         scalar_product_grad = np.dot(gradient_vector, direction_vector)
 
         while (True) : # Une méthode de bissection est utilisée
+            if np.isclose(L,U) : alpha = -1; break
             self.problem.sat_coordinates = current_position + alpha*direction
             new_value = self.problem.cost()
             if (new_value < current_value + c1*alpha*scalar_product_grad) : U = alpha; alpha = (U+L)/2; continue # Si la première condition de Wolfe n'est pas respectée, l'intervalle de recherche est réduit à [L; alpha] (on est allé trop loin)
@@ -81,6 +82,7 @@ class Optimization :
         iteration = 0
         while iteration < self.max_iter :
             iteration += 1
+            print(iteration)
             
             old_value = self.problem.value
             grad = self.problem.grad()
@@ -89,6 +91,7 @@ class Optimization :
             direction = grad/norm_grad
             
             alpha = self.__find_alpha(grad, direction)
+            if alpha == -1 : break
             self.problem.sat_coordinates += alpha * direction
             self.problem.cost()
             
