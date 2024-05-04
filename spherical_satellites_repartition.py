@@ -3,7 +3,6 @@ from optimization import *
 from satellites_problem import *
 from utilities import *
 
-coverage = 0
 problem = None
 
 def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 35786 + 6371, P = 100e3, I_necessary = (10**((-67-30)/10)), verbose = False, optimisation_decided=False, optimize=False) :
@@ -34,8 +33,6 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     kmeans.solve(verbose=verbose)
     problem.cost()
     cover = problem.coverage()
-    global coverage
-    coverage = cover
     if np.isclose(cover, 1) : return problem.sat_coordinates, problem.cost
     if not optimisation_decided:
         print(f"La couverture actuelle est de {cover * 100 :.2f}%.")
@@ -48,7 +45,6 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     elif optimize:
         optimization = Optimization(problem)
         optimization.solve(verbose=verbose)
-    coverage = problem.coverage()
     return problem.sat_coordinates, problem.cost
 
 def spherical_satellites_repartition_gps(N_satellites, cities_coordinates, cities_weights, R = 6371, H = 35786, P = 100e3, I_necessary = (10**((-67-30)/10))*1e4, verbose = False, optimize=False) :
@@ -82,8 +78,6 @@ def spherical_satellites_repartition_gps(N_satellites, cities_coordinates, citie
     if optimize:
         optimization = Optimization(problem)
         optimization.solve(verbose=verbose)
-    global coverage
-    coverage = problem.coverage()
     return problem.sat_coordinates, problem.cost
 
 
