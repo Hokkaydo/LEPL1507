@@ -69,10 +69,9 @@ class Kmeans :
             clusters = [[] for _ in range(self.problem.N_satellites)]
             
             for i in range(n):
-                distances = np.array([np.linalg.norm(centroids[j] - cities_coordinates[i]) for j in range(self.problem.N_satellites)])
-                nearest_clusters = np.argsort(distances)        
+                nearest_clusters = np.argsort(cities_coordinates[i]@centroids.T, axis=0)        
                 j = 0
-                while j < self.problem.N_satellites and distances[nearest_clusters[j]] > 8300.65:
+                while j < self.problem.N_satellites and np.linalg.norm(cities_coordinates[i] - centroids[nearest_clusters[j]]) > 8300.65:
                     j+=1
                 if j == self.problem.N_satellites:
                     print("Warning: A city is not covered by any satellite.")
@@ -84,11 +83,13 @@ class Kmeans :
                 if len(clusters[k]) == 0: 
                     centroids[k] = cities_coordinates[np.random.randint(n)]
                     continue
-                
-                centroids[k] = np.average(cities_coordinates[clusters[k]], axis=0, weights=self.problem.cities_weights[clusters[k]])
+                spherical_coords = cart2gps(cities_coordinates[clusters[k]]*self.problem.H)
+                gps_centroid = np.average(spherical_coords, axis=0, weights=self.problem.cities_weights[clusters[k]])
+                centroids[k] = gps2cart(gps_centroid)/self.problem.H
 
             iteration+=1
         self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
+        print(self.problem.sat_coordinates)
         return iteration
     
     def solve(self, verbose = False) :
