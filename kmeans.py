@@ -72,7 +72,7 @@ class Kmeans :
                 distances = np.array([np.linalg.norm(centroids[j] - cities_coordinates[i]) for j in range(self.problem.N_satellites)])
                 nearest_clusters = np.argsort(distances)        
                 j = 0
-                while j < self.problem.N_satellites and distances[nearest_clusters[j]] > 41672.81:
+                while j < self.problem.N_satellites and distances[nearest_clusters[j]] > 8300.65:
                     j+=1
                 if j == self.problem.N_satellites:
                     print("Warning: A city is not covered by any satellite.")
