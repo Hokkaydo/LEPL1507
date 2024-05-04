@@ -67,24 +67,20 @@ class Kmeans :
         while old_centroids is None or (iteration < self.max_iter and not np.allclose(old_centroids, centroids)):
             old_centroids = centroids
             clusters = [[] for _ in range(self.problem.N_satellites)]
-
-            y = [] # one row per city, one column per satellite
             
             for i in range(n):
                 distances = np.array([np.linalg.norm(centroids[j] - cities_coordinates[i]) for j in range(self.problem.N_satellites)])
-                y.append(np.argsort(distances))
-            y = np.array(y)
-                        
-            for i in range(n):
+                
+                nearest_clusters = np.argsort(distances)
                 j = 0
-                while j < self.problem.N_satellites and (sum(map(lambda x: self.problem.cities_weights[x], clusters[y[i, j]])) + self.problem.cities_weights[i]) * self.problem.I_necessary >= self.problem.P/(36e3)**2:
+                while j < self.problem.N_satellites and (sum(map(lambda x: self.problem.cities_weights[x], clusters[nearest_clusters[j]])) + self.problem.cities_weights[i]) * self.problem.I_necessary >= self.problem.P/(36e3)**2:
                     j+=1
                 if j == self.problem.N_satellites:
                     print("Warning: A city is not covered by any satellite.")
                     continue
 
-                clusters[y[i, j]].append(i)
-
+                clusters[nearest_clusters[j]].append(i)
+                
             for k in range(self.problem.N_satellites):
                 s = np.sum(cities_coordinates[clusters[k]], axis=0)
 
