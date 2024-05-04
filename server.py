@@ -73,7 +73,7 @@ def compute():
     satellites_spherical = gps2spher(satellites_gps)
     plot_map.create_fig()
     plot_map.plot_cities(gps2spher(cities), weights)
-    plot_map.plot_satellite(satellites_spherical, 3500)
+    plot_map.plot_satellite(satellites_spherical, 4511)
     filename = "temp_plot.html"
     plot_map.plot_fig("templates/" + filename, auto_open=False)
     return {"coverage": f"{coverage * 100 :.2f}", "cost": cost()}
