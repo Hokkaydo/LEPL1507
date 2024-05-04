@@ -70,8 +70,7 @@ class Kmeans :
             
             for i in range(n):
                 distances = np.array([np.linalg.norm(centroids[j] - cities_coordinates[i]) for j in range(self.problem.N_satellites)])
-                
-                nearest_clusters = np.argsort(distances)
+                nearest_clusters = np.argsort(distances)        
                 j = 0
                 while j < self.problem.N_satellites and (sum(map(lambda x: self.problem.cities_weights[x], clusters[nearest_clusters[j]])) + self.problem.cities_weights[i]) * self.problem.I_necessary >= self.problem.P/(36e3)**2:
                     j+=1
@@ -82,13 +81,12 @@ class Kmeans :
                 clusters[nearest_clusters[j]].append(i)
                 
             for k in range(self.problem.N_satellites):
-                s = np.sum(cities_coordinates[clusters[k]], axis=0)
-
-                norm = np.linalg.norm(s)
-                if len(s) == 0 or norm == 0:
+                if len(clusters[k]) == 0: 
                     centroids[k] = cities_coordinates[np.random.randint(n)]
                     continue
-                centroids[k] = s/norm
+                
+                centroids[k] = np.average(cities_coordinates[clusters[k]], axis=0, weights=self.problem.cities_weights[clusters[k]])
+
             iteration+=1
         self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
         return iteration
