@@ -76,7 +76,7 @@ def compute():
     
     plot_map.create_fig()
     plot_map.plot_cities(gps2spher(cities), weights)
-    plot_map.plot_satellite(satellites_spherical, 4511)
+    plot_map.plot_satellite(satellites_spherical, 6292.85)
     
     id = str(uuid.uuid4())
     filename = "templates/tmp/plot_" + id + ".html"
