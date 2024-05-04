@@ -27,31 +27,30 @@ def kmeans_iteration(N_satellites, cities_coordinates, weights, max_iter = 300) 
                 
             centroids[k] = np.average(cities_coordinates[clusters[k]], axis=0, weights=weights[clusters[k]])
 
-    
-    
 
 def test_N_fixed(N, iterations, average_iteration):
-    results1 = np.zeros((iterations + 1, 2))
-    for i in range(1, iterations + 1):
+    results1 = np.zeros((iterations, 2))
+    cities_n = np.geomspace(300, 3000, iterations, dtype=int)
+    for i in range(iterations):
         time = 0
         for _ in range(average_iteration):
-            n = i*50
-            cities_coordinates = np.random.rand(n, 3)*20
-            weights = np.random.rand(n)
+            cities_coordinates = np.random.rand(cities_n[i], 3)*20
+            weights = np.random.rand(cities_n[i])
             s = clock()
             kmeans_iteration(N, cities_coordinates, weights)
             time += clock() - s
             print(f"{_}/{average_iteration} | {i}")
-        results1[i, :] = [n, time/average_iteration]
+        results1[i, :] = [cities_n[i], time/average_iteration]
         print(i)
     return results1
 
 def test_n_fixed(n, iterations, average_iteration):
-    results2 = np.zeros((iterations + 1, 2))
-    for i in range(1, iterations + 1):
+    results2 = np.zeros((iterations, 2))
+    sat_n = np.geomspace(10, 100, iterations, dtype=int)
+    for i in range(iterations):
         time = 0
         for _ in range(average_iteration):
-            N = 10*i
+            N = sat_n[i]
             cities_coordinates = np.random.rand(n, 3)*20
             weights = np.random.rand(n)
             s = clock()
@@ -63,15 +62,14 @@ def test_n_fixed(n, iterations, average_iteration):
     return results2
 
     
-iterations = 50
+iterations = 10
 average_iteration = 10
 
 results1 = test_N_fixed(50, iterations, average_iteration)
 results2 = test_n_fixed(1000, iterations, average_iteration)
-    
 
-plt.plot(results1[1:, 0], results1[1:, 1], label = r"$N = 50$")
-plt.plot(results1[1:, 0], 5e-3*results1[1:, 0], label = r"O(n)")
+plt.loglog(results1[:, 0], results1[:, 1], label = r"$N = 50$")
+plt.loglog(results1[:, 0], 1e-4*results1[:, 0], label = r"O(n)")
 plt.title("Temps d'exécution de l'algorithme K-means \npour un nombre de clusters fixes et un nombre de points variable")
 plt.xlabel("Nombre de points")
 plt.ylabel("Temps d'exécution (s)")
@@ -80,8 +78,8 @@ plt.savefig("kmeans_plot_N_50.png")
 
 plt.clf()
 
-plt.plot(results2[:, 0], results2[:, 1], label = r"$n = 1000$")
-plt.plot(results2[:, 0], 2e-3*results2[:, 0], label = r"O(n)")
+plt.loglog(results2[:, 0], results2[:, 1], label = r"$n = 1000$")
+plt.loglog(results2[:, 0], 2e-3*results2[:, 0], label = r"O(n)")
 plt.title("Temps d'exécution de l'algorithme K-means \npour un nombre de points fixes et un nombre de clusters variable")
 plt.xlabel("Nombre de clusters")
 plt.ylabel("Temps d'exécution (s)")
