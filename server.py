@@ -59,14 +59,14 @@ def compute():
                 optimisation_decided=optimize_decided,
                 optimize=optimize_locally,
             ),
-            ssr.coverage,
+            ssr.problem.coverage(),
         )
     else:
         (satellites_gps, cost), coverage = (
             ssr.spherical_satellites_repartition_gps(
                 N_satellites, cities, weights, optimize=optimize_locally
             ),
-            ssr.coverage,
+            ssr.problem.coverage(),
         )
 
     cities = ssr.problem.cities_coordinates
