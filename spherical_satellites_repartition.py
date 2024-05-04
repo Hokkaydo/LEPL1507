@@ -32,6 +32,7 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     problem.input_from_file(file_name, N_satellites)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
+    print(problem.sat_coordinates)
     problem.cost()
     cover = problem.coverage()
     global coverage

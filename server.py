@@ -1,11 +1,13 @@
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template
 from flask_cors import CORS, cross_origin
 import spherical_satellites_repartition as ssr
 import numpy as np
 import plot_map
 from utilities import *
-from generate_data import write_file
+import uuid
 import os
+from threading import Timer  
+
 
 app = Flask(__name__)
 
@@ -18,9 +20,9 @@ def hello_world():
     return render_template("index.html")
 
 
-@app.route("/plot")
-def plot():
-    return render_template("temp_plot.html")
+@app.route("/plot/<id>")
+def plot(id):
+    return render_template(f"tmp/plot_{id}.html")
 
 
 @app.route("/compute", methods=["POST"])
@@ -71,13 +73,22 @@ def compute():
     weights = ssr.problem.cities_weights
 
     satellites_spherical = gps2spher(satellites_gps)
+    
     plot_map.create_fig()
     plot_map.plot_cities(gps2spher(cities), weights)
-    plot_map.plot_satellite(satellites_spherical, 3500)
-    filename = "temp_plot.html"
-    plot_map.plot_fig("templates/" + filename, auto_open=False)
-    return {"coverage": f"{coverage * 100 :.2f}", "cost": cost()}
-
+    plot_map.plot_satellite(satellites_spherical, 4511)
+    
+    id = str(uuid.uuid4())
+    filename = "templates/tmp/plot_" + id + ".html"
+    plot_map.plot_fig(filename, auto_open=False)
+    set_timeout(lambda: os.remove(filename), 30)
+    
+    return {"coverage": f"{coverage * 100 :.2f}", "cost": cost(), "id": id}
+     
+def set_timeout(fn, time, *args, **kwargs): 
+    t = Timer(time, fn, args=args, kwargs=kwargs) 
+    t.start() 
+    return t 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")

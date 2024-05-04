@@ -162,7 +162,8 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    content.src = "plot";
+                    console.log(data);
+                    content.src = "plot/" + data['id'];
                     cost.textContent = data['cost'];
                     coverage.textContent = data['coverage'];
                 })
