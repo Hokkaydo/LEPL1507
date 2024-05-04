@@ -59,14 +59,14 @@ def compute():
                 optimisation_decided=optimize_decided,
                 optimize=optimize_locally,
             ),
-            ssr.coverage,
+            ssr.problem.coverage(),
         )
     else:
         (satellites_gps, cost), coverage = (
             ssr.spherical_satellites_repartition_gps(
                 N_satellites, cities, weights, optimize=optimize_locally
             ),
-            ssr.coverage,
+            ssr.problem.coverage(),
         )
 
     cities = ssr.problem.cities_coordinates
@@ -76,7 +76,7 @@ def compute():
     
     plot_map.create_fig()
     plot_map.plot_cities(gps2spher(cities), weights)
-    plot_map.plot_satellite(satellites_spherical, 4511)
+    plot_map.plot_satellite(satellites_spherical, 6292.85)
     
     id = str(uuid.uuid4())
     filename = "templates/tmp/plot_" + id + ".html"
