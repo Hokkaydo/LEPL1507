@@ -3,12 +3,16 @@ from satellites_problem import *
 class Kmeans :
     """
     ...
-
+    Classe pour résoudre  problème de maximisation en utilisant un algorithme de K-means
+    
     Attributs :
         problem  (SatellitesProblem) : problème sur lequel va être réalisé l'algorithme de Kmeans.
         max_iter (int)               : nombre d'itérations maximal qui vont être réalisées dans l'algorithme de Kmeans
     
     Méthodes :
+        __init__(self, problem:SatellitesProblem, max_iter = 300)
+        __kmeans2D(self)
+        __kmeans3D(self)
         solve
     """
 
