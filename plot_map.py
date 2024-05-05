@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 from plotly.offline import plot
 from utilities import *
 
+#Inpiration de l'utilisation du fichier ne_110m_admin_0_countries pour le plot de la terre  https://community.plotly.com/t/create-earth-sphere-with-all-countries-in-plotly/79284
+# Fichier ne_110m_admin_0_countries venant du site Natural Earth https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/
 
 def plot_sphere(fig):
     """plot sphere"""
