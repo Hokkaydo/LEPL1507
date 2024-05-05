@@ -9,9 +9,11 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
-<body class="w-full h-full relative">
-    <div class="absolute h-full w-96 flex items-center right-12">
-        <div class="flex flex-col gap-2 justify-center w-96 bg-gray-100 rounded-xl p-8">
+<body class="w-full h-full flex flex-col relative overflow-scroll">
+    <img id="open-sidebar-button" src="{{ url_for('static', filename='open.svg') }}" class="rotate-180 w-16 border-2 p-4 rounded-full text-gray-100 hidden right-12 absolute top-96" onclick="toggle_sidebar()"/>
+    <div id="sidebar" class="absolute lg:h-full  w-96 flex items-center right-0 m-8">
+        <div class="flex flex-col gap-2 justify-center lg:h-min w-96 overflow-scroll bg-gray-100 rounded-xl p-8">
+            <img src="{{ url_for('static', filename='close.svg') }}" class="w-4" onclick="toggle_sidebar()"/>
             <div class="flex justify-between w-full">
                 <div class="flex flex-col">
                     <label for="N_satellites">Nombre de satellites :</label>
@@ -52,7 +54,19 @@
                 <button class="rounded-r-xl border-gray-200 border-2 border-l-0 p-2 w-full"
                     onclick="add_random_cities()"> villes aléatoires</button>
             </div>
-            <div id="cities" class="flex flex-col max-h-48 overflow-scroll"></div>
+            <table class="max-h-48 overflow-scroll">
+                <thead>
+                    <tr>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Poids</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="cities" class="">
+                </tbody>
+                
+            </table>
             <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onClick="clear_cities()">Supprimer les
                 villes</button>
 
@@ -87,7 +101,7 @@
 
 
     <iframe id="content" class="h-full w-full"></iframe>
-    <div class="absolute bottom-0">
+    <div class="">
         <div class="flex justify-center w-full">
             <p><span class="font-semibold p-4">Coût: </span><span id="cost">0</span></p>
             <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>    
@@ -116,6 +130,14 @@
 
             if(!N_satellites_input.value){
                 alert("Veuillez entrer le nombre de satellites")
+                return;
+            }
+            if(csv && !csv_input.files.length){
+                alert("Veuillez sélectionner un fichier CSV")
+                return;
+            } 
+            if (!csv && cities.length == 0){
+                alert("Veuillez entrer au moins une ville")
                 return;
             }
 
@@ -171,6 +193,21 @@
                     console.log("Done");
                 });
         }
+        
+        open_sidebar = true
+        sidebar = document.querySelector('#sidebar')
+        open_sidebar_button = document.querySelector('#open-sidebar-button')
+        function toggle_sidebar() {
+            if (open_sidebar) {
+                open_sidebar = false
+                open_sidebar_button.style.display = "block";
+                sidebar.style.display = "none";
+            } else {
+                open_sidebar = true
+                open_sidebar_button.style.display = "none";
+                sidebar.style.display = "flex";
+            }
+        }
 
         lat_input = document.getElementById('lat')
         long_input = document.getElementById('long')
@@ -180,12 +217,12 @@
             console.log(cities)
             cities.push([lat_input.value, long_input.value])
             weights.push(w_input.value)
-            console.log("Adding w:" + w_input.value + " ,lat:" + lat_input.value + ", long:" + long_input.value)
             update_cities()
         }
 
         function delete_city(index) {
-            cities.splice(index, 1)
+            removed = cities.splice(index, 1)
+            
             update_cities()
         }
 
@@ -195,11 +232,14 @@
         min_lat = -90
         max_lat = 90
 
+        function round(value, decimals) {
+            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+        }
         function add_random_cities() {
             for (i = 0; i < n_random_cities_input.value; i++) {
-                long = Math.random() * (max_long - min_long) + min_long
-                lat = Math.random() * (max_lat - min_lat) + min_lat
-                w = Math.random() * 10 + 10
+                long = round(Math.random() * (max_long - min_long) + min_long, 2)
+                lat = round(Math.random() * (max_lat - min_lat) + min_lat, 2)
+                w = round(Math.random() * 10 + 10, 2)
                 cities.push([lat, long])
                 weights.push(w)
             }
@@ -209,15 +249,13 @@
         function update_cities() {
             cities_div.innerHTML = ""
             for (i = 0; i < cities.length; i++) {
-                cities_div.innerHTML += `
-                <div class="flex justify-between w-full px-2">
-                    <div class="flex gap-2 w-11/12">
-                        <p>Lat: ${cities[i][0]}</p>
-                        <p>Long: ${cities[i][1]}</p>
-                        <p>W: ${weights[i]}</p>
-                    </div>
-                    <img src="{{ url_for('static',filename='close.svg') }}" onClick="delete_city(${i})" class="self-end w-1/12 text-gray-200">
-                </div>
+                cities_div.innerHTML += 
+                `<tr>
+                    <td>${cities[i][0]}</td>
+                    <td>${cities[i][1]}</td>
+                    <td>${weights[i]}</td>
+                    <td><img src="{{ url_for('static',filename='close.svg') }}" onClick="delete_city(${i})" class="w-4 text-gray-200"></td>
+                </tr>
                 `
             }
         }
