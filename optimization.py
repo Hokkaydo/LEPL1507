@@ -20,7 +20,7 @@ class Optimization :
         self.max_iter = max_iter
         self.epsilon = epsilon
     
-    def __find_alpha(self, gradient, direction, alpha=1, c1 = 1e-7, c2 = 0.9) :
+    def __find_alpha(self, gradient, direction, alpha=1, c1 = 1e-7, c2 = 1e-3) :
         """
         Trouve une valeur d'un pas satisfaisant aux conditions de Wolfe pour le problème donné dans la diection de recherche et avec le gradient indiqués.
 
