@@ -1,5 +1,4 @@
 from satellites_problem import *
-from math import floor
 
 class Kmeans :
     """
