@@ -19,7 +19,7 @@ def write_file(file_name, weights, x, y) :
 if __name__ == '__main__' :
     n = int(input("Nombre de villes : "))
     file_name = input("Nom du fichier : ")
-    weights = np.random.randint(0, 100000, n)
+    weights = np.random.randint(0, 10000000, n)
     x = 180*np.random.rand(n) - 90 # lat
     y = 360*np.random.rand(n) - 180 # long
     write_file(file_name, weights, x, y)

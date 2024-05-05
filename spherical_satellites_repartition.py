@@ -33,10 +33,17 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     kmeans.solve(verbose=verbose)
     problem.cost()
     cover = problem.coverage()
+    if np.isclose(cover, 0) : # Si la couverture après l'algorithme des Kmeans est nulle, nous nous situons dans un minimum. Dans ce cas, nous plaçons les satellites aléatoirement pour en sortir avant de démarrer l'optimisation locale.
+        problem.sat_coordinates = H*np.ones((N_satellites, 3))
+        for i in range(N_satellites) :
+            problem.sat_coordinates[i,0] = 180*np.random.rand() - 90
+            problem.sat_coordinates[i,1] = 360*np.random.rand() - 180
+        problem.cost()
+        cover = problem.coverage()
     if np.isclose(cover, 1) : return problem.sat_coordinates, problem.cost
     if not optimisation_decided:
         print(f"La couverture actuelle est de {cover * 100 :.2f}%.")
-        print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ?")
+        print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ? Cette opération peut prendre un peu de temps.")
         answer = input("[oui/non] ")
         print()
         if answer == "oui" :

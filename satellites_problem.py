@@ -51,7 +51,7 @@ class SatellitesProblem :
         self.value              = None
 
         self.alpha = 0.999999
-        self.gamma = 8
+        self.gamma = 2
     
     def input_from_file(self, file_name, N_satellites) :
         """
