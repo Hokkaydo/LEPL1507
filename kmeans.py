@@ -64,6 +64,7 @@ class Kmeans :
             centroids[i] = cities_coordinates[i%len(cities_coordinates)]
 
         old_centroids = None
+        max_covered = 1.3029769341972 # Distance maximum de couverture d'un satellite une fois les villes et satellites normalisés
         iteration = 0
         while old_centroids is None or (iteration < self.max_iter and not np.allclose(old_centroids, centroids)):
             old_centroids = centroids
@@ -73,9 +74,9 @@ class Kmeans :
             for i in range(n):
                 nearest_cluster = np.argmax(cities_coordinates[i]@centroids.T, axis=0) 
                 
-                if np.linalg.norm(cities_coordinates[i] - centroids[nearest_clusters[0]]) > 1.3029769341972:
+                if np.linalg.norm(cities_coordinates[i] - centroids[nearest_cluster]) > max_covered:
                     city_not_covered+=1
-                clusters[nearest_clusters].append(i)
+                clusters[nearest_cluster].append(i)
                 
             for k in range(self.problem.N_satellites):
                 if len(clusters[k]) == 0: 
