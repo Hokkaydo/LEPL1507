@@ -92,6 +92,11 @@ class Optimization :
             alpha = self.__find_alpha(grad, direction)
             if alpha == -1 : break
             self.problem.sat_coordinates += alpha * direction
+            for i in range (self.problem.N_satellites) : # La lagitude est comprise entre -90° et 90° et la longitude entre -180° et 180°
+                while (self.problem.sat_coordinates[i,1] > 90)   : self.problem.sat_coordinates[i,1] -= 180
+                while (self.problem.sat_coordinates[i,1] < -90)  : self.problem.sat_coordinates[i,1] += 180
+                while (self.problem.sat_coordinates[i,2] > 180)  : self.problem.sat_coordinates[i,2] -= 360
+                while (self.problem.sat_coordinates[i,2] < -180) : self.problem.sat_coordinates[i,2] += 360
             self.problem.cost()
             
             if abs(self.problem.value - old_value) < self.epsilon : break # Critère d'arrêt portant sur la variation du profit
