@@ -3,20 +3,29 @@ from satellites_problem import *
 class Kmeans :
     """
     ...
+    Classe pour résoudre  problème de maximisation en utilisant un algorithme de K-means
+    
+    Classe permettant de résoudre un problème de maximisation en utilisant l'algorithme des K-Means
 
     Attributs :
         problem  (SatellitesProblem) : problème sur lequel va être réalisé l'algorithme de Kmeans.
         max_iter (int)               : nombre d'itérations maximal qui vont être réalisées dans l'algorithme de Kmeans
     
     Méthodes :
-        solve
+        __init__(self, problem, max_iter = 300)
+        __kmeans2D(self)
+        __kmeans3D(self)
+        solve(self, verbose = False)
     """
 
     def __init__(self, problem:SatellitesProblem, max_iter = 300) :
         self.problem = problem
         self.max_iter = max_iter
-    
+        
     def __kmeans2D(self) :
+        """
+            Effectue une minimisation de la fonction objectif sur un plan 2D en utilisant l'algorithme des K-Means
+        """
         n = self.problem.N_satellites
 
         cities_coordinates = self.problem.cities_coordinates[:,:2]
@@ -52,7 +61,18 @@ class Kmeans :
             self.problem.sat_coordinates[i, 2] = self.problem.H
         return iteration
     
-    def __kmeans3D(self) :        
+    def __kmeans3D(self) :      
+        """
+            Effectue une minimisation de la fonction objectif 
+            en utilisant l'algorithme des K-Means sur une hypersphère unitaire de dimension 3 
+            en coordonnées cartésiennes
+            
+            Args:
+                self.problem : problème sur lequel va être réalisé l'algorithme de Kmeans.
+            Returns:
+                int : nombre d'itérations réalisées pour converger
+                self.problem.sat_coordinates : coordonnées des satellites optimales
+        """  
         cities_coordinates = gps2cart(self.problem.cities_coordinates)
 
         for i in range(len(cities_coordinates)):
@@ -93,6 +113,18 @@ class Kmeans :
         return iteration
     
     def solve(self, verbose = False) :
+        """
+            Résoud un problème de maximisation en utilisant la méthode des K-Means
+
+            Argument :
+                verbose (bool) : booléen indiquant si les détails de l'optimisation doivent être imprimés dans la sortie standard
+
+            Résultat :
+                self.problem.sat_coordinates contient la position optimale des satellites trouvée et self.problem.cost contient le profit associé à cette solution.
+            
+            Complexité : O(|S||V|)
+        """
+
         if verbose :
             print("Lancement de l'algorithme de Kmeans.")
         if   self.problem.dimension == 2 : iteration = self.__kmeans2D()

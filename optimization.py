@@ -72,7 +72,7 @@ class Optimization :
         Résultat :
             self.problem.sat_coordinates contient la position optimale des satellites trouvée et self.problem.cost contient le profit associé à cette solution.
         
-        Complexité : O()
+            Complexité : O(|S||V|)
         """
         if verbose :
             print("Lancement de l'algorithme d'optimisation locale.")
