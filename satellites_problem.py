@@ -127,6 +127,9 @@ class SatellitesProblem :
         Retourne :
             float : valeur de la fonction objectif avec la position des satellites actuelles. Celle-ci correspond à la somme des intensités reçues dans chaque ville.
         
+        Résultat :
+            Si la valeur de la "vraie" fonction objectif (non continue dans le cas sphérique) est calculée, self.value est actualisé.
+        
         Complexité : O(N_cities * N_satellites)
         """
         total_received = 0

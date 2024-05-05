@@ -82,7 +82,6 @@ class Optimization :
         iteration = 0
         while iteration < self.max_iter :
             iteration += 1
-            print(iteration)
             
             old_value = self.problem.value
             grad = self.problem.grad()

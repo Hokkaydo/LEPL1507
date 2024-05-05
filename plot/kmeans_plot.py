@@ -74,7 +74,7 @@ plt.title("Temps d'exécution de l'algorithme K-means \npour un nombre de cluste
 plt.xlabel("Nombre de points")
 plt.ylabel("Temps d'exécution (s)")
 plt.legend()
-plt.savefig("kmeans_plot_N_50.png")
+plt.savefig("kmeans_plot_N_50.pdf")
 
 plt.clf()
 
@@ -84,4 +84,4 @@ plt.title("Temps d'exécution de l'algorithme K-means \npour un nombre de points
 plt.xlabel("Nombre de clusters")
 plt.ylabel("Temps d'exécution (s)")
 plt.legend()
-plt.savefig("kmeans_plot_n_1000.png")
+plt.savefig("kmeans_plot_n_1000.pdf")

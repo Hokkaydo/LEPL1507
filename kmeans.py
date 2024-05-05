@@ -20,7 +20,7 @@ class Kmeans :
     def __kmeans2D(self) :
         n = self.problem.N_satellites
 
-        cities_coordinates = self.problem.cities_coordinates
+        cities_coordinates = self.problem.cities_coordinates[:,:2]
         weights = self.problem.cities_weights
         
         centroids = np.zeros((self.problem.N_satellites, 2))
@@ -46,12 +46,13 @@ class Kmeans :
                     centroids[cluster] = np.average(cities_coordinates[indexes], axis=0, weights=weights[indexes])
             iteration += 1
                      
-        self.problem.sat_coordinates = centroids
+        self.problem.sat_coordinates = np.zeros((self.problem.N_satellites, 3))
+        for i in range(self.problem.N_satellites) :
+            self.problem.sat_coordinates[i,:2] = centroids[i]
+            self.problem.sat_coordinates[i,2] = self.problem.H
         return iteration
     
-    def __kmeans3D(self) :
-        ### ATTENTION DEFINIR UNE VALEUR  de seuil###
-        
+    def __kmeans3D(self) :        
         cities_coordinates = gps2cart(self.problem.cities_coordinates)
 
         for i in range(len(cities_coordinates)):
@@ -88,15 +89,13 @@ class Kmeans :
                 centroids[k] = gps2cart(gps_centroid)/self.problem.H
 
             iteration+=1
-        print(cart2gps(centroids))
         self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
-        print(self.problem.sat_coordinates)
         return iteration
     
     def solve(self, verbose = False) :
         if verbose :
             print("Lancement de l'algorithme de Kmeans.")
-        if   self.problem.dimension == 2 : self.__kmeans2D()
+        if   self.problem.dimension == 2 : iteration = self.__kmeans2D()
         elif self.problem.dimension == 3 : iteration = self.__kmeans3D()
         self.problem.value = self.problem.cost()
         if verbose :

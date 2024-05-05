@@ -19,7 +19,7 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
         P                       (float) : puissance de l'onde qu'un satellite peut émettre (en W). Par défaut, une valeur de 100kW a été choisie.
         I_necessary             (float) : intensité nécessaire pour satisfaire une personne (en W). Par défaut, une valeur de -67dBm a été choisie.
         verbose                 (bool)  : booléen indiquant si les détails de l'optimisation doivent être imprimés dans la sortie standard
-        optimisation_decided    (bool) : booléen indiquant si l'utilisateur a déjà décidé de lancer l'optimisation locale (interface graphique)
+        optimisation_decided    (bool)  : booléen indiquant si l'utilisateur a déjà décidé de lancer l'optimisation locale (interface graphique)
         optimize                (bool)  : booléen indiquant si l'optimisation locale doit être lancée après le clustering
 
     Retourne :
@@ -31,7 +31,6 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     problem.input_from_file(file_name, N_satellites)
     kmeans = Kmeans(problem)
     kmeans.solve(verbose=verbose)
-    print(problem.sat_coordinates)
     problem.cost()
     cover = problem.coverage()
     if np.isclose(cover, 1) : return problem.sat_coordinates, problem.cost
