@@ -70,7 +70,8 @@ class Kmeans :
             clusters = [[] for _ in range(self.problem.N_satellites)]
             
             for i in range(n):
-                nearest_clusters = np.argsort(cities_coordinates[i]@centroids.T, axis=0)        
+                nearest_clusters = np.argsort(cities_coordinates[i]@centroids.T, axis=0) 
+                nearest_clusters = np.flip(nearest_clusters)
                 j = 0
                 while j < self.problem.N_satellites and np.linalg.norm(cities_coordinates[i] - centroids[nearest_clusters[j]]) > 8300.65:
                     j+=1
