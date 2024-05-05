@@ -76,6 +76,7 @@ class Kmeans :
                 
                 if np.linalg.norm(cities_coordinates[i] - centroids[nearest_cluster]) > max_covered:
                     cities_not_covered+=1
+                    continue
                 clusters[nearest_cluster].append(i)
                 
             for k in range(self.problem.N_satellites):
