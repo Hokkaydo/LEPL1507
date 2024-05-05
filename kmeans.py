@@ -24,31 +24,32 @@ class Kmeans :
         
         centroids = np.zeros((self.problem.N_satellites, 2))
         for i in range(self.problem.N_satellites):
-            centroids[i] = cities_coordinates[i%len(cities_coordinates)]
-
+            centroids[i] = cities_coordinates[i%len(cities_coordinates)]                    # Initialisation des satellites aux positions des villes dans l'ordre de la liste
+                                                                                            # Cette initialisation permet de s'assurer qu'il est impossible que 2 satellites soient intialement
+                                                                                            # placés au même endroit, sauf s'il y a trop peu de villes pour le nombre de satellites
         iteration = 0
         prev_centroids = None
         while prev_centroids is None or (iteration < self.max_iter and not np.allclose(prev_centroids, centroids)):
             classif = {i:{} for i in range(n)}
             for i in range(len(cities_coordinates)):
-                dist = [np.linalg.norm(cities_coordinates[i] - c) for c in centroids]
+                dist = [np.linalg.norm(cities_coordinates[i] - c) for c in centroids]       # Calcul de la distance entre chaque ville et chaque satellite
 
-                closest_cluster = dist.index(min(dist))
+                closest_cluster = dist.index(min(dist))                                     # Attribution de la ville au satellite le plus proche
                 classif[closest_cluster][i] = cities_coordinates[i]
                 
             prev_centroids = centroids.copy()
             for cluster in range(len(classif)):
-                if len(classif[cluster]) == 0:
+                if len(classif[cluster]) == 0:                                              # Si un satellite n'a pas de ville attribuée, on lui en attribue une aléatoirement  
                     centroids[cluster] = cities_coordinates[np.random.randint(0, n)]
-                else:
-                    indexes = [i for i in classif[cluster].keys()]
-                    centroids[cluster] = np.average(cities_coordinates[indexes], axis=0, weights=weights[indexes])
+                else:           
+                    indexes = [i for i in classif[cluster].keys()]                          
+                    centroids[cluster] = np.average(cities_coordinates[indexes], axis=0, weights=weights[indexes])  # Nouvelle position du satellite = moyenne pondérée des villes qui lui sont attribuées
             iteration += 1
                      
         self.problem.sat_coordinates = np.zeros((self.problem.N_satellites, 3))
         for i in range(self.problem.N_satellites) :
             self.problem.sat_coordinates[i,:2] = centroids[i]
-            self.problem.sat_coordinates[i,2] = self.problem.H
+            self.problem.sat_coordinates[i, 2] = self.problem.H
         return iteration
     
     def __kmeans3D(self) :        
@@ -71,23 +72,23 @@ class Kmeans :
             
             cities_not_covered = 0
             for i in range(n):
-                nearest_cluster = np.argmax(cities_coordinates[i]@centroids.T, axis=0) 
+                nearest_cluster = np.argmax(cities_coordinates[i]@centroids.T, axis=0)                          # Satellite maximisant le produit scalaire entre la ville i et chaque satellite
                 
-                if np.linalg.norm(cities_coordinates[i] - centroids[nearest_cluster]) > max_covered:
+                if np.linalg.norm(cities_coordinates[i] - centroids[nearest_cluster]) > max_covered:            # Vérifier si le satellite le plus proche est à une distance supérieure à la distance maximale de couverture
                     cities_not_covered+=1
                     continue
                 clusters[nearest_cluster].append(i)
                 
             for k in range(self.problem.N_satellites):
-                if len(clusters[k]) == 0: 
+                if len(clusters[k]) == 0:                                                                       # Si un satellite n'a pas de ville attribuée, on lui en attribue une aléatoirement
                     centroids[k] = cities_coordinates[np.random.randint(n)]
                     continue
-                spherical_coords = cart2gps(cities_coordinates[clusters[k]]*self.problem.H)
-                gps_centroid = np.average(spherical_coords, axis=0, weights=self.problem.cities_weights[clusters[k]])
-                centroids[k] = gps2cart(gps_centroid)/self.problem.H
+                spherical_coords = cart2gps(cities_coordinates[clusters[k]]*self.problem.H)                                 # Le K-Means sur une hypersphère est effectué en coordonnées cartésiennes
+                gps_centroid = np.average(spherical_coords, axis=0, weights=self.problem.cities_weights[clusters[k]])       # or si la moyenne est effectuée en coordonnées cartésiennes, le rayon n'est pas conservé.
+                centroids[k] = gps2cart(gps_centroid)/self.problem.H                                                        # On effectue donc la moyenne en coordonnées sphériques avant de reconvertir en coordonnées cartésiennes.
 
             iteration+=1
-        self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
+        self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)                                       # On reconvertit les coordonnées cartésiennes des satellites en coordonnées sphériques pour respecter la convention du Problem
         print("Number of cities not covered : ", cities_not_covered)
         return iteration
     
