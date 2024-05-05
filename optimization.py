@@ -20,7 +20,7 @@ class Optimization :
         self.max_iter = max_iter
         self.epsilon = epsilon
     
-    def __find_alpha(self, gradient, direction, alpha=1, c1 = 1e-3, c2 = 0.9) :
+    def __find_alpha(self, gradient, direction, alpha=1, c1 = 1e-7, c2 = 0.9) :
         """
         Trouve une valeur d'un pas satisfaisant aux conditions de Wolfe pour le problème donné dans la diection de recherche et avec le gradient indiqués.
 
@@ -101,4 +101,5 @@ class Optimization :
             if iteration == self.max_iter : print("Le nombre d'itérations maximal a été atteint.")
             else                          : print("L'algorithme s'est déroulé avec succès.")
             new_cost = self.problem.value
-            print(f"La nouvelle puissance totale reçue est de {new_cost * 1e6 :.2f}µW, ce qui représente une amélioration de {100 * (new_cost - old_cost)/old_cost :.2f}%. La couverture est maintenant de {self.problem.coverage() * 100 :.2f}%.\n")
+            if old_cost != 0 : print(f"La nouvelle puissance totale reçue est de {new_cost * 1e6 :.2f}µW, ce qui représente une amélioration de {100 * (new_cost - old_cost)/old_cost :.2f}%. La couverture est maintenant de {self.problem.coverage() * 100 :.2f}%.\n")
+            else : print(f"La nouvelle puissance totale reçue est de {new_cost * 1e6 :.2f}µW. La couverture est maintenant de {self.problem.coverage() * 100 :.2f}%.\n")

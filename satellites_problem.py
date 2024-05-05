@@ -210,6 +210,14 @@ class SatellitesProblem :
         return self.value / (np.sum(self.cities_weights) * self.I_necessary)
     
     def uncovered_cities(self) :
+        """
+        Calcule le nombre de villes qui ne reçoive pas d'Internet.
+        
+        Retourne :
+            int : nombre de villes couvertes par aucun satellite
+        
+        Complexité : O(N_cities*N_satellites)
+        """
         nb_uncovered = 0
         for i in range (len(self.cities_coordinates)) :
             if self.__cost_city(i) == 0 : nb_uncovered += 1
