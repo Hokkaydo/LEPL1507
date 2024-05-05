@@ -70,12 +70,12 @@ class Kmeans :
             old_centroids = centroids
             clusters = [[] for _ in range(self.problem.N_satellites)]
             
-            city_not_coverd = 0
+            cities_not_covered = 0
             for i in range(n):
                 nearest_cluster = np.argmax(cities_coordinates[i]@centroids.T, axis=0) 
                 
                 if np.linalg.norm(cities_coordinates[i] - centroids[nearest_cluster]) > max_covered:
-                    city_not_covered+=1
+                    cities_not_covered+=1
                 clusters[nearest_cluster].append(i)
                 
             for k in range(self.problem.N_satellites):
@@ -88,7 +88,7 @@ class Kmeans :
 
             iteration+=1
         self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
-        print("Number of cities not covered : ", city_not_covered
+        print("Number of cities not covered : ", cities_not_covered)
         return iteration
     
     def solve(self, verbose = False) :
