@@ -724,6 +724,10 @@ video {
   flex-direction: column;
 }
 
+.items-start {
+  align-items: flex-start;
+}
+
 .items-center {
   align-items: center;
 }
@@ -887,7 +891,26 @@ button:active {
   background-color: #aeb0b2;
 }
 
+@media (min-width: 768px) {
+  .md\:absolute {
+    position: absolute;
+  }
+
+  .md\:h-full {
+    height: 100%;
+  }
+
+  .md\:h-min {
+    height: -moz-min-content;
+    height: min-content;
+  }
+}
+
 @media (min-width: 1024px) {
+  .lg\:absolute {
+    position: absolute;
+  }
+
   .lg\:h-full {
     height: 100%;
   }
@@ -897,6 +920,21 @@ button:active {
   }
 
   .lg\:h-min {
+    height: -moz-min-content;
+    height: min-content;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:absolute {
+    position: absolute;
+  }
+
+  .xl\:h-full {
+    height: 100%;
+  }
+
+  .xl\:h-min {
     height: -moz-min-content;
     height: min-content;
   }
