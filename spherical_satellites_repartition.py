@@ -36,8 +36,8 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
     if np.isclose(cover, 0) : # Si la couverture après l'algorithme des Kmeans est nulle, nous nous situons dans un minimum. Dans ce cas, nous plaçons les satellites aléatoirement pour en sortir avant de démarrer l'optimisation locale.
         problem.sat_coordinates = H*np.ones((N_satellites, 3))
         for i in range(N_satellites) :
-            problem.sat_coordinates[i,0] = 180*np.random.rand() - 90
-            problem.sat_coordinates[i,1] = 360*np.random.rand() - 180
+            problem.sat_coordinates[i,1] = 180*np.random.rand() - 90
+            problem.sat_coordinates[i,2] = 360*np.random.rand() - 180
         problem.cost()
         cover = problem.coverage()
     if np.isclose(cover, 1) : return problem.sat_coordinates, problem.cost
