@@ -69,16 +69,13 @@ class Kmeans :
             old_centroids = centroids
             clusters = [[] for _ in range(self.problem.N_satellites)]
             
+            city_not_coverd = 0
             for i in range(n):
-                nearest_clusters = np.argsort(cities_coordinates[i]@centroids.T, axis=0) 
-                nearest_clusters = np.flip(nearest_clusters)
-                j = 0
-                while j < self.problem.N_satellites and np.linalg.norm(cities_coordinates[i] - centroids[nearest_clusters[j]]) > 8300.65:
-                    j+=1
-                if j == self.problem.N_satellites:
-                    continue
-
-                clusters[nearest_clusters[j]].append(i)
+                nearest_cluster = np.argmax(cities_coordinates[i]@centroids.T, axis=0) 
+                
+                if np.linalg.norm(cities_coordinates[i] - centroids[nearest_clusters[0]]) > 1.3029769341972:
+                    city_not_covered+=1
+                clusters[nearest_clusters].append(i)
                 
             for k in range(self.problem.N_satellites):
                 if len(clusters[k]) == 0: 
@@ -90,6 +87,7 @@ class Kmeans :
 
             iteration+=1
         self.problem.sat_coordinates = cart2gps(centroids*self.problem.H)
+        print("Number of cities not covered : ", city_not_covered
         return iteration
     
     def solve(self, verbose = False) :
