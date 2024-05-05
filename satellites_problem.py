@@ -208,3 +208,9 @@ class SatellitesProblem :
         Complexité : O(N_cities)
         """
         return self.value / (np.sum(self.cities_weights) * self.I_necessary)
+    
+    def uncovered_cities(self) :
+        nb_uncovered = 0
+        for i in range (len(self.cities_coordinates)) :
+            if self.__cost_city(i) == 0 : nb_uncovered += 1
+        return nb_uncovered
