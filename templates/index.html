@@ -216,7 +216,7 @@
                 .then(data => {
                     content.src = "plot/" + data['id'];
                     cost.textContent = (Number(data['cost'])*1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
-                    coverage.textContent = (Number(data['coverage'])*1e2).toLocaleString(undefined, { maximumFractionDigits: 2 });
+                    coverage.textContent = (Number(data['cost'])*1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
                     update_download_link(data['output']);
                 }).finally(() => {
                     loader.style.display = "none";
@@ -278,7 +278,7 @@
             for (i = 0; i < n_random_cities_input.value; i++) {
                 long = round(Math.random() * (max_long - min_long) + min_long, 2)
                 lat = round(Math.random() * (max_lat - min_lat) + min_lat, 2)
-                w = round(Math.random() * 10 + 10, 2)
+                w = round(Math.random() * 10e6 + 1e5, 0)
                 cities.push([lat, long])
                 weights.push(w)
             }
