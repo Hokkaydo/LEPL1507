@@ -89,7 +89,7 @@ def compute():
     plot_map.plot_fig(filename, auto_open=False)
     set_timeout(lambda: os.remove(filename), 30)
     
-    return {"coverage": f"{coverage * 100 :.2f}", "cost": cost(), "id": id, "output": base64.b64encode(sat.to_csv(index=False).encode("utf-8")).decode("utf-8")}
+    return {"coverage": coverage, "cost": cost(), "id": id, "output": base64.b64encode(sat.to_csv(index=False).encode("utf-8")).decode("utf-8")}
      
 def set_timeout(fn, time, *args, **kwargs): 
     t = Timer(time, fn, args=args, kwargs=kwargs) 

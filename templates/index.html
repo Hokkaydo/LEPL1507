@@ -109,7 +109,7 @@
 
     <iframe id="content" class="h-full w-full"></iframe>
     <div class="flex items-start w-full">
-        <p><span class="font-semibold p-4">Coût: </span><span id="cost">0</span></p>
+        <p><span class="font-semibold p-4">Puissance cumulée reçues par les villes: </span><span id="cost">0</span>μW</p>
         <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>
         <p><a id="download-link" href="#" download="output.csv" class="font-semibold p-4 text-pink-600 hidden">Download
                 output</a></p>
@@ -215,8 +215,8 @@
                 .then(response => response.json())
                 .then(data => {
                     content.src = "plot/" + data['id'];
-                    cost.textContent = data['cost'];
-                    coverage.textContent = data['coverage'];
+                    cost.textContent = (Number(data['cost'])*1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
+                    coverage.textContent = (Number(data['coverage'])*1e2).toLocaleString(undefined, { maximumFractionDigits: 2 });
                     update_download_link(data['output']);
                 }).finally(() => {
                     loader.style.display = "none";
