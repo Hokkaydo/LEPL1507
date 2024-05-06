@@ -10,3 +10,27 @@ button:hover {
 button:active {
     background-color: #aeb0b2;
 }
+
+
+.spinner,
+.spinner {
+  box-sizing: border-box;
+}
+
+.spinner {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  border: 6.4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: spinner 1.2s linear infinite;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

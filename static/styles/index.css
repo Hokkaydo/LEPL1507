@@ -578,25 +578,31 @@ video {
   top: 24rem;
 }
 
-.m-8 {
-  margin: 2rem;
-}
-
 .my-8 {
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .mb-2 {
   margin-bottom: 0.5rem;
 }
 
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
 .mr-8 {
   margin-right: 2rem;
+}
+
+.ml-8 {
+  margin-left: 2rem;
 }
 
 .block {
@@ -636,12 +642,21 @@ video {
   height: min-content;
 }
 
+.h-max {
+  height: -moz-max-content;
+  height: max-content;
+}
+
 .max-h-48 {
   max-height: 12rem;
 }
 
 .w-16 {
   width: 4rem;
+}
+
+.w-2 {
+  width: 0.5rem;
 }
 
 .w-4 {
@@ -839,24 +854,33 @@ button:active {
   background-color: #aeb0b2;
 }
 
-@media (min-width: 768px) {
-  .md\:absolute {
-    position: absolute;
+.spinner,
+.spinner {
+  box-sizing: border-box;
+}
+
+.spinner {
+  content: " ";
+  display: block;
+  border-radius: 50%;
+  border: 6.4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: spinner 1.2s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 
-@media (min-width: 1280px) {
-  .xl\:h-full {
-    height: 100%;
-  }
-
-  .xl\:h-min {
-    height: -moz-min-content;
-    height: min-content;
-  }
-
-  .xl\:h-2\/3 {
-    height: 66.666667%;
+@media (min-width: 768px) {
+  .md\:absolute {
+    position: absolute;
   }
 }
 
@@ -866,3 +890,4 @@ button:active {
     color: rgb(156 163 175 / var(--tw-text-opacity));
   }
 }
+

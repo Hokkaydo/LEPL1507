@@ -17,16 +17,21 @@
         <div class="flex flex-col gap-2 justify-center w-full overflow-scroll bg-gray-100 rounded-xl p-8 my-8">
             <img src="{{ url_for('static', filename='close.svg') }}" class="w-4" onclick="toggle_sidebar()" />
             <div class="flex justify-between w-full">
-                <div class="flex flex-col">
+                <div class="flex flex-col mx-1">
                     <label for="N_satellites">Nombre de satellites :</label>
                     <input type="number" id="N_satellites"
                         class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
 
                 </div>
-                <div class="flex flex-col w-min">
+                <div class="flex flex-col w-min mx-1">
                     <label for="optimize_locally">Optimiser localement:</label>
                     <input type="checkbox" id="optimize_locally"
                         class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" />
+                </div>
+                <div class="flex flex-col w-min mx-1">
+                    <label for="draw_coverage_surfaces">Afficher les zones couvertes:</label>
+                    <input type="checkbox" id="draw_coverage_surfaces"
+                        class="text-sm rounded-lg block w-full p-2.5 bg-gray-200 border-gray-600" checked/>
                 </div>
             </div>
             <div class="flex justify-center gap-2 items-center">
@@ -108,20 +113,43 @@
         <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>
         <p><a id="download-link" href="#" download="output.csv" class="font-semibold p-4 text-pink-600 hidden">Download
                 output</a></p>
+        <div class="hidden" id="loader">
+            <div class="spinner w-8 h-8 ml-8"></div>
+        </div>
     </div>
     <script>
 
-        cities = []
-        weights = []
-        N_satellites_input = document.getElementById('N_satellites')
-        optimize_locally_input = document.getElementById('optimize_locally')
-        csv_input = document.getElementById('dropzone-file')
+        let cities = []
+        let weights = []
+        const N_satellites_input = document.getElementById('N_satellites')
+        const optimize_locally_input = document.getElementById('optimize_locally')
+        const draw_coverage_surfaces = document.getElementById('draw_coverage_surfaces')
+        const csv_input = document.getElementById('dropzone-file')
         csv_input.value = "";
-        csv_file_name = document.getElementById('csv-file-name')
+        const csv_file_name = document.getElementById('csv-file-name')
 
-        content = document.getElementById('content')
-        cost = document.getElementById('cost')
-        coverage = document.getElementById('coverage')
+        const content = document.getElementById('content')
+        const cost = document.getElementById('cost')
+        const coverage = document.getElementById('coverage')
+
+        const loader = document.getElementById('loader')
+
+        let open_sidebar = true
+        const sidebar = document.getElementById('sidebar')
+        const open_sidebar_button = document.getElementById('open-sidebar-button')
+
+        const lat_input = document.getElementById('lat')
+        const long_input = document.getElementById('long')
+        const w_input = document.getElementById('w')
+        const cities_div = document.getElementById('cities')
+
+        const n_random_cities_input = document.getElementById("n_random_cities")
+        const min_long = -180
+        const max_long = 180
+        const min_lat = -90
+        const max_lat = 90
+
+
 
         csv_input.addEventListener('change', function () {
             const file = csv_input.files[0];
@@ -143,6 +171,8 @@
                 return;
             }
 
+            loader.style.display = "block";
+
             body = {}
 
             body['N_satellites'] = N_satellites_input.value;
@@ -152,6 +182,7 @@
             body['R'] = 6371;
             body['optimize_decided'] = true;
             body['optimize_locally'] = optimize_locally_input.checked;
+            body['draw_coverage_surfaces'] = draw_coverage_surfaces.checked;
             body['csv_content'] = "";
 
             if (csv) {
@@ -159,24 +190,21 @@
                     alert("Veuillez sélectionner un fichier CSV")
                     return;
                 }
-                console.log(csv_input.files[0].name);
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     csv_content = event.target.result;
-
-                    b64 = btoa(csv_content);
+                    b64 = btoa(unescape(encodeURIComponent(csv_content)));
                     body['csv_content'] = b64;
 
                     call(body);
                 }
-                reader.readAsText(csv_input.files[0]);
+                reader.readAsText(csv_input.files[0], 'UTF-8');
             } else {
                 call(body);
             }
         }
 
         function call(body) {
-            console.log(body);
             fetch("/compute", {
                 method: "POST",
                 headers: {
@@ -186,15 +214,13 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     content.src = "plot/" + data['id'];
                     cost.textContent = data['cost'];
                     coverage.textContent = data['coverage'];
                     update_download_link(data['output']);
-
-                })
-                .finally(() => {
-                    console.log("Done");
+                }).finally(() => {
+                    loader.style.display = "none";
+                    toggle_sidebar();
                 });
         }
 
@@ -221,9 +247,6 @@
             downloadLink.style.display = 'inline';
         }
 
-        open_sidebar = true
-        sidebar = document.querySelector('#sidebar')
-        open_sidebar_button = document.querySelector('#open-sidebar-button')
         function toggle_sidebar() {
             if (open_sidebar) {
                 open_sidebar = false
@@ -236,12 +259,7 @@
             }
         }
 
-        lat_input = document.getElementById('lat')
-        long_input = document.getElementById('long')
-        w_input = document.getElementById('w')
-        cities_div = document.getElementById('cities')
         function add_city() {
-            console.log(cities)
             cities.push([lat_input.value, long_input.value])
             weights.push(w_input.value)
             update_cities()
@@ -252,12 +270,6 @@
 
             update_cities()
         }
-
-        n_random_cities_input = document.getElementById("n_random_cities")
-        min_long = -180
-        max_long = 180
-        min_lat = -90
-        max_lat = 90
 
         function round(value, decimals) {
             return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);

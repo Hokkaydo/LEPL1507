@@ -147,7 +147,7 @@ def plot_cities(cites_spherical, weights):
     )
 
 
-def plot_satellite(satellites_spherical, rad):
+def plot_satellite(satellites_spherical, rad, draw_circles=True):
     """
     Place the satellite on the spherical surface
 
@@ -156,7 +156,7 @@ def plot_satellite(satellites_spherical, rad):
         radius (float): radius of the surface coverd by the satellite
     """
     clor = f"rgb(0, 0, 230)"
-    satellites_spherical[:, 0] *= 0.18
+    satellites_spherical[:, 0] *= 0.28 # 0.18
 
     x, y, z = spher2cart(satellites_spherical).T
     fig.add_trace(
@@ -181,19 +181,19 @@ def plot_satellite(satellites_spherical, rad):
                 showlegend=False,
             )
         )
-
-    for phi, theta in satellites_spherical[:, 1:]:
-        x1, y1, z1 = draw_circle_on_sphere(phi, theta, rad)
-        fig.add_surface(
-            z=z1,
-            x=x1,
-            y=y1,
-            colorscale=[[0, clor], [1, clor]],
-            showscale=False,
-            opacity=0.5,
-            showlegend=False,
-            lighting=dict(diffuse=0.1),
-        )
+    if draw_circles:
+        for phi, theta in satellites_spherical[:, 1:]:
+            x1, y1, z1 = draw_circle_on_sphere(phi, theta, rad)
+            fig.add_surface(
+                z=z1,
+                x=x1,
+                y=y1,
+                colorscale=[[0, clor], [1, clor]],
+                showscale=False,
+                opacity=0.2,
+                showlegend=False,
+                lighting=dict(diffuse=0.1),
+            )
 
 
 def plot_fig(filename="temp-plot.html", auto_open=True):
