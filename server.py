@@ -7,7 +7,8 @@ from utilities import *
 import uuid
 import os
 from threading import Timer  
-
+import pandas as pd
+import base64
 
 app = Flask(__name__)
 
@@ -49,9 +50,8 @@ def compute():
 
     if csv:
         with open("csv_data.csv", "w") as f:
-            import base64
-
             f.write(base64.b64decode(csv_content).decode("utf-8"))
+            
         (satellites_gps, cost), coverage = (
             ssr.spherical_satellites_repartition(
                 N_satellites=N_satellites,
@@ -74,6 +74,11 @@ def compute():
 
     satellites_spherical = gps2spher(satellites_gps)
     
+    sat = pd.DataFrame()
+    sat["Rayon"]     = satellites_gps[:,0]
+    sat["Latitude"]  = satellites_gps[:,1]
+    sat["Longitude"] = satellites_gps[:,2]
+    
     plot_map.create_fig()
     plot_map.plot_cities(gps2spher(cities), weights)
     plot_map.plot_satellite(satellites_spherical, 6292.85)
@@ -83,7 +88,7 @@ def compute():
     plot_map.plot_fig(filename, auto_open=False)
     set_timeout(lambda: os.remove(filename), 30)
     
-    return {"coverage": f"{coverage * 100 :.2f}", "cost": cost(), "id": id}
+    return {"coverage": f"{coverage * 100 :.2f}", "cost": cost(), "id": id, "output": base64.b64encode(sat.to_csv(index=False).encode("utf-8")).decode("utf-8")}
      
 def set_timeout(fn, time, *args, **kwargs): 
     t = Timer(time, fn, args=args, kwargs=kwargs) 

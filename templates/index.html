@@ -9,11 +9,13 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
-<body class="w-full h-full flex flex-col relative overflow-scroll">
-    <img id="open-sidebar-button" src="{{ url_for('static', filename='open.svg') }}" class="rotate-180 w-16 border-2 p-4 rounded-full text-gray-100 hidden right-12 absolute top-96" onclick="toggle_sidebar()"/>
-    <div id="sidebar" class="md:absolute xl:h-full  w-96 flex items-center right-0 m-8">
-        <div class="flex flex-col gap-2 justify-center xl:h-min w-96 overflow-scroll bg-gray-100 rounded-xl p-8">
-            <img src="{{ url_for('static', filename='close.svg') }}" class="w-4" onclick="toggle_sidebar()"/>
+<body class="w-full h-full flex flex-col relative p-8">
+    <img id="open-sidebar-button" src="{{ url_for('static', filename='open.svg') }}"
+        class="rotate-180 w-16 border-2 p-4 rounded-full text-gray-100 hidden right-12 absolute top-96"
+        onclick="toggle_sidebar()" />
+    <div id="sidebar" class="md:absolute w-96 flex items-center right-0 my-8 mr-8">
+        <div class="flex flex-col gap-2 justify-center w-full overflow-scroll bg-gray-100 rounded-xl p-8 my-8">
+            <img src="{{ url_for('static', filename='close.svg') }}" class="w-4" onclick="toggle_sidebar()" />
             <div class="flex justify-between w-full">
                 <div class="flex flex-col">
                     <label for="N_satellites">Nombre de satellites :</label>
@@ -65,7 +67,7 @@
                 </thead>
                 <tbody id="cities" class="">
                 </tbody>
-                
+
             </table>
             <button class="border-2 h-min border-gray-200 p-2 rounded-xl" onClick="clear_cities()">Supprimer les
                 villes</button>
@@ -103,7 +105,9 @@
     <iframe id="content" class="h-full w-full"></iframe>
     <div class="flex items-start w-full">
         <p><span class="font-semibold p-4">Coût: </span><span id="cost">0</span></p>
-        <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>    
+        <p><span class="font-semibold p-4">Couverture: </span><span id="coverage">0</span>%</p>
+        <p><a id="download-link" href="#" download="output.csv" class="font-semibold p-4 text-pink-600 hidden">Download
+                output</a></p>
     </div>
     <script>
 
@@ -126,15 +130,15 @@
 
         function compute(csv) {
 
-            if(!N_satellites_input.value){
+            if (!N_satellites_input.value) {
                 alert("Veuillez entrer le nombre de satellites")
                 return;
             }
-            if(csv && !csv_input.files.length){
+            if (csv && !csv_input.files.length) {
                 alert("Veuillez sélectionner un fichier CSV")
                 return;
-            } 
-            if (!csv && cities.length == 0){
+            }
+            if (!csv && cities.length == 0) {
                 alert("Veuillez entrer au moins une ville")
                 return;
             }
@@ -186,12 +190,37 @@
                     content.src = "plot/" + data['id'];
                     cost.textContent = data['cost'];
                     coverage.textContent = data['coverage'];
+                    update_download_link(data['output']);
+
                 })
                 .finally(() => {
                     console.log("Done");
                 });
         }
-        
+
+        function update_download_link(output) {
+            // Decode base64 content to binary data
+            const binaryData = atob(output);
+
+            // Convert binary data to array buffer
+            const arrayBuffer = new ArrayBuffer(binaryData.length);
+            const uint8Array = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < binaryData.length; i++) {
+                uint8Array[i] = binaryData.charCodeAt(i);
+            }
+
+            // Create Blob from array buffer
+            const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
+
+            // Create URL for the Blob
+            const blobURL = URL.createObjectURL(blob);
+
+            // Set href attribute of download link to Blob URL
+            const downloadLink = document.getElementById('download-link');
+            downloadLink.href = blobURL;
+            downloadLink.style.display = 'inline';
+        }
+
         open_sidebar = true
         sidebar = document.querySelector('#sidebar')
         open_sidebar_button = document.querySelector('#open-sidebar-button')
@@ -220,7 +249,7 @@
 
         function delete_city(index) {
             removed = cities.splice(index, 1)
-            
+
             update_cities()
         }
 
@@ -247,8 +276,8 @@
         function update_cities() {
             cities_div.innerHTML = ""
             for (i = 0; i < cities.length; i++) {
-                cities_div.innerHTML += 
-                `<tr>
+                cities_div.innerHTML +=
+                    `<tr>
                     <td>${cities[i][0]}</td>
                     <td>${cities[i][1]}</td>
                     <td>${weights[i]}</td>
