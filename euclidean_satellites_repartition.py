@@ -31,7 +31,7 @@ def euclidean_satellites_repartition(N_satellites, file_name, H = 35786, P = 100
     print(f"La couverture actuelle est de {problem.coverage()}.")
     print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ? Attention, cela risque de prendre un peu de temps.")
     answer = input("[oui/non] ")
-    if answer == "oui" :
+    if answer == "oui" or answer == "o" or answer == "y":
         optimization = Optimization(problem)
         optimization.solve(verbose=verbose)
     return problem.sat_coordinates, problem.cost

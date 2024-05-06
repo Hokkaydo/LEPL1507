@@ -20,6 +20,7 @@ if __name__ == "__main__":
         sat_coordinates, cost = euclidean_satellites_repartition(N_satellites, file_name, verbose=True)
     elif sys.argv[1] == "spherical":
         sat_coordinates, cost = spherical_satellites_repartition(N_satellites, file_name, verbose=True)
+        
     sat = pd.DataFrame()
     sat["Rayon"]     = sat_coordinates[:,0]
     sat["Latitude"]  = sat_coordinates[:,1]

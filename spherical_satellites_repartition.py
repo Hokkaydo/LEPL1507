@@ -46,7 +46,7 @@ def spherical_satellites_repartition (N_satellites, file_name, R = 6371, H = 357
         print("Désirez-vous lancer l'algorithme d'optimisation locale (méthode du gradient) pour obtenir des résultats plus précis ? Cette opération peut prendre un peu de temps.")
         answer = input("[oui/non] ")
         print()
-        if answer == "oui" :
+        if answer == "oui" or answer == "o" or answer == "y":
             optimization = Optimization(problem)
             optimization.solve(verbose=verbose)
     elif optimize:
