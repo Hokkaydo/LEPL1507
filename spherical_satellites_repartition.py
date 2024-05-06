@@ -87,22 +87,3 @@ def spherical_satellites_repartition_gps(N_satellites, cities_coordinates, citie
         optimization = Optimization(problem)
         optimization.solve(verbose=verbose)
     return problem.sat_coordinates, problem.cost
-
-
-if __name__ == '__main__' :
-    file_name = input("Nom du fichier avec les données : ")
-    N_satellites = int(input("Nombre de satellites : "))
-    print()
-
-    sat_coordinates, cost = spherical_satellites_repartition(N_satellites, file_name, verbose=True)
-    sat = pd.DataFrame()
-    sat["Rayon"]     = sat_coordinates[:,0]
-    sat["Latitude"]  = sat_coordinates[:,1]
-    sat["Longitude"] = sat_coordinates[:,2]
-    print("Merci d'avoir utilisé notre application pour trouver la position de vos satellites.")
-
-    print("Où souhaitez-vous que nous imprimions les coordonnées finales des satellites ?")
-    answer = input("[stdout/<filename>] ")
-    if answer == "stdout" : print(sat)
-    else                  : sat.to_csv(answer)
-    print("\nBonne journée :)")

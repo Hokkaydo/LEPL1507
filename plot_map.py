@@ -1,6 +1,5 @@
 import geopandas as gpd
 import numpy as np
-from math import asin
 
 import plotly.graph_objects as go
 from plotly.offline import plot

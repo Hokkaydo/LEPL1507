@@ -1,5 +1,3 @@
-import numpy as np
-
 from kmeans import *
 from optimization import *
 from satellites_problem import *
