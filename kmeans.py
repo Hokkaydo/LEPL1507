@@ -2,8 +2,7 @@ from satellites_problem import *
 
 class Kmeans :
     """
-    ...
-    Classe pour résoudre  problème de maximisation en utilisant un algorithme de K-means
+    Classe pour résoudre un problème de maximisation en utilisant un algorithme de K-means
     
     Classe permettant de résoudre un problème de maximisation en utilisant l'algorithme des K-Means
 

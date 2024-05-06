@@ -47,6 +47,12 @@ class Optimization :
         while (True) : # Une méthode de bissection est utilisée
             if np.isclose(L,U) : alpha = -1; break
             self.problem.sat_coordinates = current_position + alpha*direction
+            if self.problem.dimension == 3 :
+                for i in range (self.problem.N_satellites) : # La lagitude est comprise entre -90° et 90° et la longitude entre -180° et 180°
+                    while (self.problem.sat_coordinates[i,1] > 90)   : self.problem.sat_coordinates[i,1] -= 180
+                    while (self.problem.sat_coordinates[i,1] < -90)  : self.problem.sat_coordinates[i,1] += 180
+                    while (self.problem.sat_coordinates[i,2] > 180)  : self.problem.sat_coordinates[i,2] -= 360
+                    while (self.problem.sat_coordinates[i,2] < -180) : self.problem.sat_coordinates[i,2] += 360
             new_value = self.problem.cost()
             if (new_value < current_value + c1*alpha*scalar_product_grad) : U = alpha; alpha = (U+L)/2; continue # Si la première condition de Wolfe n'est pas respectée, l'intervalle de recherche est réduit à [L; alpha] (on est allé trop loin)
 
@@ -92,11 +98,12 @@ class Optimization :
             alpha = self.__find_alpha(grad, direction)
             if alpha == -1 : break
             self.problem.sat_coordinates += alpha * direction
-            for i in range (self.problem.N_satellites) : # La lagitude est comprise entre -90° et 90° et la longitude entre -180° et 180°
-                while (self.problem.sat_coordinates[i,1] > 90)   : self.problem.sat_coordinates[i,1] -= 180
-                while (self.problem.sat_coordinates[i,1] < -90)  : self.problem.sat_coordinates[i,1] += 180
-                while (self.problem.sat_coordinates[i,2] > 180)  : self.problem.sat_coordinates[i,2] -= 360
-                while (self.problem.sat_coordinates[i,2] < -180) : self.problem.sat_coordinates[i,2] += 360
+            if self.problem.dimension == 3 :
+                for i in range (self.problem.N_satellites) : # La lagitude est comprise entre -90° et 90° et la longitude entre -180° et 180°
+                    while (self.problem.sat_coordinates[i,1] > 90)   : self.problem.sat_coordinates[i,1] -= 180
+                    while (self.problem.sat_coordinates[i,1] < -90)  : self.problem.sat_coordinates[i,1] += 180
+                    while (self.problem.sat_coordinates[i,2] > 180)  : self.problem.sat_coordinates[i,2] -= 360
+                    while (self.problem.sat_coordinates[i,2] < -180) : self.problem.sat_coordinates[i,2] += 360
             self.problem.cost()
             
             if abs(self.problem.value - old_value) < self.epsilon : break # Critère d'arrêt portant sur la variation du profit
