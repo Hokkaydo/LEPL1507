@@ -156,7 +156,7 @@ def plot_satellite(satellites_spherical, rad, draw_circles=True):
         radius (float): radius of the surface coverd by the satellite
     """
     clor = f"rgb(0, 0, 230)"
-    satellites_spherical[:, 0] *= 0.28 # 0.18
+    satellites_spherical[:, 0] *= 0.18
 
     x, y, z = spher2cart(satellites_spherical).T
     fig.add_trace(
