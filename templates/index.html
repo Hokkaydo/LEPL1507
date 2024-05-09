@@ -216,7 +216,7 @@
                 .then(data => {
                     content.src = "plot/" + data['id'];
                     cost.textContent = (Number(data['cost'])*1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
-                    coverage.textContent = (Number(data['cost'])*1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
+                    coverage.textContent = (Number(data['coverage'])*1e2).toLocaleString(undefined, { maximumFractionDigits: 2 });
                     update_download_link(data['output']);
                 }).finally(() => {
                     loader.style.display = "none";
@@ -265,8 +265,14 @@
             update_cities()
         }
 
-        function delete_city(index) {
-            removed = cities.splice(index, 1)
+        function delete_city(lat, long, weight) {
+            for(i = 0; i < cities.length; i++){
+                if(cities[i][0] == lat && cities[i][1] == long && weights[i] == weight){
+                    cities.splice(i, 1)
+                    weights.splice(i, 1)
+                    break;
+                }
+            }
 
             update_cities()
         }
@@ -293,7 +299,7 @@
                     <td>${cities[i][0]}</td>
                     <td>${cities[i][1]}</td>
                     <td>${weights[i]}</td>
-                    <td><img src="{{ url_for('static',filename='close.svg') }}" onClick="delete_city(${i})" class="w-4 text-gray-200"></td>
+                    <td><img src="{{ url_for('static',filename='close.svg') }}" onClick="delete_city(${cities[i][0]}, ${cities[i][1]}, ${weights[i]})" class="w-4 text-gray-200"></td>
                 </tr>
                 `
             }
